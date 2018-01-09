@@ -1,0 +1,10 @@
+[SPEECH_RES_START]
+nlp:
+asr:
+action:
+extra:
+[SPEECH_RES_END]
+nlp:{"appId":"ROKID.EXCEPTION","asr":"若琪,你好","cloud":false,"intent":"NO_NLP","slots":{}}
+asr:
+action:{"response":{"action":{"directives":[],"form":"cut","shouldEndSession":true,"type":"NORMAL","version":"2.0.0"},"card":{},"resType":"INTENT"},"startWithActiveWord":false,"version":"2.0.0"}
+extra:
