@@ -10,12 +10,17 @@ INCLUDEPATH += $$PWD/include/openvoice
 QMAKE_CXXFLAGS +=  -std=c++11
 SOURCES += main.cpp \
     filehandler.cpp \
-    speechsdk.cpp
+    speechsdk.cpp \
+    ttssdk.cpp \
+    player/player.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
 
 HEADERS += \
     filehandler.h \
-    speechsdk.h
+    speechsdk.h \
+    ttssdk.h \
+    common.h \
+    player/player.h
 
