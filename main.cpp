@@ -18,9 +18,7 @@ int main()
     popts.port = 443;
     popts.branch = "/api";
     // 认证信息，需要申请
-    popts.key = "17E0ECB86CC446BFB62FF0A6A3641B0B";
-    popts.device_type_id = "89A9AD627E124316BD8392D749B5C73B";
-    popts.secret = "1ECCFBCB2298416693A5790304BDF9C9";
+
     // 设备名称，类似昵称，可自由选择，不影响认证结果
     popts.device_id = "keantestaudio";
 
