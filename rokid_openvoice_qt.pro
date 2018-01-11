@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     filehandler.cpp \
     speechsdk.cpp \
     ttssdk.cpp \
-    player/player.cpp
+    player/player.cpp \
+    player/mp3decod.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -22,5 +23,6 @@ HEADERS += \
     speechsdk.h \
     ttssdk.h \
     common.h \
-    player/player.h
+    player/player.h \
+    player/mp3decod.h
 
