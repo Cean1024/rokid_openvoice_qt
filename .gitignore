@@ -1,4 +1,5 @@
 *.o
 *.user
 rokid_openvoice_qt
+/test/
 
