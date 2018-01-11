@@ -3,41 +3,37 @@
 #include <iostream>
 #include <memory>
 #include "speech.h"
-#include "tts.h"
+
 
 #include "Poco/Thread.h"
 #include "Poco/Runnable.h"
-
+#include "common.h"
 #include "filehandler.h"
 
-enum sdktype{
-    sdktype_tts=0,
-    sdktype_speech
-};
-
 using namespace rokid;
+typedef void (*callback_speech_func)(rokid::speech::SpeechResult &Result);
+
 class SpeechSdk: public Poco::Runnable
 {
 public:
     SpeechSdk();
     ~SpeechSdk();
-    int init(rokid::speech::PrepareOptions &popts,sdktype type);
+    int init(rokid::speech::PrepareOptions &popts,callback_speech_func func);
     int speek(std::string strings);
 
     virtual void run();
-    void tts_run();
     void speech_run();
 protected:
 
-    int tts_init(speech::PrepareOptions &popts);
     int speech_init(speech::PrepareOptions &popts);
 
 private:
     Poco::Thread thread;
-    std::shared_ptr<speech::Tts> tts = speech::Tts::new_instance();
+
     std::shared_ptr<speech::Speech> speech = speech::Speech::new_instance();
-    sdktype type;
-    filehandler filehdler;
+
+    callback_speech_func handleresult;
+    //
 };
 
 #endif // SPEECHSDK_H
