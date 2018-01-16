@@ -21,6 +21,7 @@ public:
 private:
     std::shared_ptr<speech::Tts> tts = speech::Tts::new_instance();
     callback_tts_func handleresult;
+    Poco::Thread ptr;
 
 };
 

@@ -4,8 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 QMAKE_RPATHDIR += $$PWD/lib/openvoice
-QMAKE_RPATHDIR += $$PWD/lib/
-LIBS +=   -lspeech -lPocoFoundation
+LIBS +=  -L$$PWD/lib/ -lmad -lspeech -lPocoFoundation -lasound -lPocoNet
 INCLUDEPATH += $$PWD/include/openvoice
 QMAKE_CXXFLAGS +=  -std=c++11
 SOURCES += main.cpp \
@@ -13,7 +12,12 @@ SOURCES += main.cpp \
     speechsdk.cpp \
     ttssdk.cpp \
     player/player.cpp \
-    player/mp3decod.cpp
+    player/mp3decode.cpp \
+    player/alsahandle.cpp \
+    tools/linklist/linklist.cpp \
+    player/siglelist.cpp \
+    player/decodecallback.cpp \
+    tools/http/httpdl.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -24,5 +28,9 @@ HEADERS += \
     ttssdk.h \
     common.h \
     player/player.h \
-    player/mp3decod.h
+    player/mp3decode.h \
+    player/alsahandle.h \
+    tools/linklist/linklist.h \
+    player/siglelist.h \
+    tools/http/httpdl.h
 

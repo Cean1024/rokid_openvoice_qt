@@ -94,7 +94,7 @@ void filehandler::Handle_tts_result(speech::TtsResult &Result)
         }
        };break;
     case speech::TTS_RES_CANCELLED:
-    case speech::TTS_RES_END:{
+    case speech::TTS_RES_END: {
         printf("Handler ------tts------> voice end\n");
         f_tts<<Result.voice;
         if(audiofile_tts.file_status > 0 )
