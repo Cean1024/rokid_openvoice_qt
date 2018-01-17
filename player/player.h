@@ -6,6 +6,7 @@
 #include "Poco/Thread.h"
 #include "Poco/Runnable.h"
 
+
 enum playstatus {
     stop_play =0,
     start_play
@@ -17,10 +18,13 @@ struct audiodata {
     playstatus playflag; /*0 stop 1 play*/
 };
 
+typedef void (*next_cb)(void *data);
+
 class Player:public Poco::Runnable
 {
 public:
     Player();
+    //Player(next_cb func,void *data);
     ~Player();
 
     r_status start();
@@ -29,13 +33,16 @@ public:
     struct audiodata data_d;
     AlsaHandle audio;
     mp3decode mp3;
+
 protected:
     void virtual run();
 
+
 private:
-
-
     Poco::Thread thread;
+    bool flag;
+    void *data;
+    //next_cb next_func;
 
 
 };

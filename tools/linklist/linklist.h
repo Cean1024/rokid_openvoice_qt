@@ -22,6 +22,7 @@ public:
     r_status get(listnode_d **data);
     listnode_d * CreateNode();
     void  Release(listnode_d *data);
+    r_status clean();
 
 protected:
     r_status CreateList();

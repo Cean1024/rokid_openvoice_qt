@@ -2,19 +2,19 @@
 
 LinkList::LinkList()
 {
-    if( !pool ) {
+
         //pool = new MemoryPool(BUFSIZE,MEMPOOLDEFCOUNT,MEMPOOLBUFCOUNT);
         pool = new MemoryPool(MEMPOOLBUFSIZE);
         CreateList();
-    }
+
 }
 
 LinkList::LinkList(int size)
 {
-    if( !pool ) {
+
         pool = new MemoryPool(size,MEMPOOLDEFCOUNT,MEMPOOLBUFCOUNT);
         CreateList();
-    }
+
 }
 
 LinkList::~LinkList()
@@ -34,21 +34,38 @@ listnode_d * LinkList::CreateNode()
     listnode_d *  node = NULL;
     node = new listnode_d;
     if(node) {
-
         node->buf = reinterpret_cast <char*>(pool->get());
         node->size = pool->blockSize();
-
     }
-
     return node;
 }
 void  LinkList::Release(listnode_d *data)
 {
-    if(data){
+    if(data) {
         pool->release(data->buf);
         delete data;
     }
     data = NULL;
+}
+
+r_status LinkList::clean()
+{
+    listnode_d *node;
+    while( head.next != &tail) {
+
+        if(head.next->next != NULL ) {
+            node = head.next;
+            head.next = head.next->next;
+
+        } else {
+            node = head.next;
+            head.next = &tail;
+            tail.next = NULL;
+        }
+        Release(node);
+    }
+
+    return SUCCESS;
 }
 
 r_status LinkList::Insert(listnode_d *data)

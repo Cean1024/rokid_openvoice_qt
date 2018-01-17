@@ -3,18 +3,29 @@
 #include "ttssdk.h"
 #include "player/player.h"
 #include "tools/http/httpdl.h"
+#include "tools/json/jsonhandle.h"
+
 
 using namespace std;
 
 
-void Handle_speech_result(speech::SpeechResult &Result);
-void Handle_tts_result(speech::TtsResult &Result);
-void playhandler(Player &player);
-void runhandler(void *data);
+void Handle_speech_result(speech::SpeechResult &Result,void *data);
+void Handle_tts_result(speech::TtsResult &Result,void *data);
+void handlhttpdl(char *buf,void *param);
+void action_play(JSON::Object::Ptr &item,void *data);
+void action_stop(JSON::Object::Ptr &item,void *data);
+void action_voice(JSON::Object::Ptr &item,void *data);
+void handlenext(void *data);
+struct noded{
+    void *data1;
+    void *data2;
+};
 
 
 int main()
 {
+
+
     using namespace rokid;
 
     speech::PrepareOptions popts;
@@ -28,11 +39,38 @@ int main()
     // 设备名称，类似昵称，可自由选择，不影响认证结果
     popts.device_id = "keantestaudio";
 /*
-    SpeechSdk speech_sdk;
-    TtsSdk tts_sdk;
+    //SpeechSdk speech_sdk;
+    //TtsSdk tts_sdk;
     //filehandler filehdler;
-    speech_sdk.init(popts , Handle_speech_result);
+    //speech_sdk.init(popts , Handle_speech_result);
     //tts_sdk.init(popts , Handle_tts_result);
+
+
+    std::string input;
+    while(1) {
+        DEBUG("waitting\n");
+        std::cin >> input;
+        speech_sdk.speek(input);
+
+    };*/
+
+    SpeechSdk speech_sdk;
+    //Player player(handlenext,(void *)&speech_sdk);
+    Player player;
+    JsonHandle Jhandl;
+
+    Httpdl hdl;
+    struct noded nodes;
+    nodes.data1 = &player;
+    nodes.data2 = &hdl;
+
+
+    Jhandl.cb_registe(action_play,(void *)&nodes,action_type_media);
+    Jhandl.cb_registe(action_stop,(void *)&nodes,action_type_stop);
+    Jhandl.cb_registe(action_voice,NULL,action_type_voice);
+
+
+    speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
 
     std::string input;
     while(1) {
@@ -41,88 +79,59 @@ int main()
         speech_sdk.speek(input);
 
     };
-*/
-    Player player;
-
-    Poco::Thread thr;
-
-    //playhandler(player);
-    //thr.start(runhandler,(void *)&player);
-    //thr.join();
-
-    Httpdl hdl;
-    string url,rname,lname;
-    url="http://rokid.oss-cn-qingdao.aliyuncs.com/thirdparty/news/res/common_bg3.mp3";
-    rname="/home/cean/test.mp3";
-
-
-    int filesize;
-    try {
-         filesize = hdl.HttpGetFile(url,rname,lname);
-     }
-     catch (Poco::Exception& e) {
-         std::cerr << "Catch a poco exception: " << e.displayText() << std::endl;
-         return -1;
-     }
-     catch (std::exception& e) {
-         std::cerr << "Catch a std exception: " << e.what() << std::endl;
-         return -1;
-     }
-     catch (...) {
-         std::cerr << "Unknown Exception!!!" << std::endl;
-         return -1;
-     }
-
-    std::cout << "Get " << lname << " " << filesize/1024.0/1024.0 << " MB!!!" << std::endl;
-
-    while(1)sleep(10);
     return 0;
 }
-void runhandler(void *data)
+void handlenext(void *data)
 {
-    std::cout << "runhandler \n";
-    Player *player = (Player * )data;
-    playhandler(*player);
+    //SpeechSdk  * sbody = (SpeechSdk *)data;
+    //sbody->speek("下一首");
 }
-void playhandler(Player &player)
+void handlhttpdl(char *buf,void *param)
 {
-    std::string input;
-    //std::cout << "please input words:";
-    //std::cin >> input;
-    input = "/home/samba/music/2.mp3";
+    Player *player=(Player *)param;
+    listnode_d * node = player->list.CreateNode();
+    memcpy(node->buf,buf,node->size);
+    player->list.Insert(node);
 
-    std::ifstream  f_audio(input);
-
-    int count =0;
-    if(!f_audio.is_open()) {
-        DEBUG("Erro opening file:%s",input.c_str());
-        return;
-    }
-
-    player.start();
-
-    while(1)
-    {
-        listnode_d * node = player.list.CreateNode();
-        f_audio.read(node->buf,node->size);
-        player.list.Insert(node);
-        DEBUG("insert data %5d  size:%d\n",count++,node->size);
-        if( f_audio.eof())
-            break;
-        usleep(20000);
-    }
-    f_audio.close();
-
-    while(1) {
-        DEBUG("waitting\n");
-        sleep(10);
-
-    };
 }
 
-void Handle_speech_result(speech::SpeechResult &Result)
+void action_play(JSON::Object::Ptr &item,void *data)
 {
-    /*
+    struct noded *nodes = (struct noded *)data;
+    Player *player = (Player *)nodes->data1;
+    Httpdl *hdl = (Httpdl *)nodes->data2;
+    Dynamic::Var tmp = item->get("url");
+    std::string url = tmp.toString();
+    std::cout <<url<< std::endl;
+    hdl->stop();
+    player->stop();
+
+    player->start();
+    hdl->RegistCb( handlhttpdl, nodes->data1);
+    hdl->setUrl(url);
+    hdl->start();
+}
+
+void action_stop(JSON::Object::Ptr &item,void *data)
+{
+    struct noded *nodes = (struct noded *)data;
+    Player *player = (Player *)nodes->data1;
+    Httpdl *hdl = (Httpdl *)nodes->data2;
+    hdl->stop();
+    player->stop();
+}
+void action_voice(JSON::Object::Ptr &item,void *data)
+{
+    Dynamic::Var tmp = item->get("tts");
+    std::string url = tmp.toString();
+    std::cout <<url<< std::endl;
+}
+
+
+void Handle_speech_result(speech::SpeechResult &Result, void *data)
+{
+    JsonHandle * handl = (JsonHandle *)data;
+/*
     SPEECH_RES_INTER = 0,
     SPEECH_RES_START,
     SPEECH_RES_ASR_FINISH,
@@ -146,22 +155,11 @@ void Handle_speech_result(speech::SpeechResult &Result)
     case speech::SPEECH_RES_START:{
         printf("Handler ------speech------> voice start\n");
 
-            std::cout<<"[SPEECH_RES_START]"<<std::endl;
-            std::cout<<"nlp:"<<Result.nlp<<std::endl;
-            std::cout<<"asr:"<<Result.asr<<std::endl;
-            std::cout<<"action:"<<Result.action<<std::endl;
-            std::cout<<"extra:"<<Result.extra<<std::endl;
-
        };break;
     case speech::SPEECH_RES_CANCELLED:
     case speech::SPEECH_RES_END:{
         printf("Handler ------speech------> voice end\n");
-        std::cout<<"[SPEECH_RES_END]"<<std::endl;
-        std::cout<<"nlp:"<<Result.nlp<<std::endl;
-        std::cout<<"asr:"<<Result.asr<<std::endl;
-        std::cout<<"action:"<<Result.action<<std::endl;
-        std::cout<<"extra:"<<Result.extra<<std::endl;
-
+        handl->handle(Result.action);
        };break;
 
     case speech::SPEECH_RES_ASR_FINISH: {
@@ -172,7 +170,7 @@ void Handle_speech_result(speech::SpeechResult &Result)
 
 std::ofstream f_tts;
 
-void Handle_tts_result(speech::TtsResult &Result)
+void Handle_tts_result(speech::TtsResult &Result, void *data)
 {
 
 #if 0

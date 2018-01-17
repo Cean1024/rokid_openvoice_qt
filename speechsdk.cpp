@@ -27,12 +27,13 @@ int SpeechSdk::speech_init(speech::PrepareOptions &popts)
     opts->set_lang(speech::Lang::ZH);
     speech->config(opts);
     speech->prepare(popts);
-    speech->put_text("若琪,我要听科技新闻");
+    speech->put_text("若琪，来首音乐");
 
 }
-int SpeechSdk::init(rokid::speech::PrepareOptions &popts, callback_speech_func func)
+int SpeechSdk::init(rokid::speech::PrepareOptions &popts, callback_speech_func func,void * data)
 {
     handleresult = func;
+    this->data = data;
 
     speech_init(popts);
 
@@ -48,7 +49,7 @@ void SpeechSdk::speech_run()
         if (!speech->poll(result))
             break;
         // 处理result
-        handleresult(result);
+        handleresult(result,data);
     }
 }
 

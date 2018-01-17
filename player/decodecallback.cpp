@@ -4,14 +4,13 @@
 #include "player.h"
 
 
-char streamtmpbuf[MEMPOOLBUFSIZED];
+static char streamtmpbuf[MEMPOOLBUFSIZED];
 
 enum mad_flow input(void *data,
                     struct mad_stream *stream)
 {
 
     struct audiodata *data_d = (struct audiodata *)data;
-    //DEBUG(" in %s\n",__func__);
     listnode_d *gnode;
 
     while(1) {
@@ -22,7 +21,7 @@ enum mad_flow input(void *data,
 
                 if( stream->error == MAD_ERROR_BUFLEN ) {
                     int remainbytes = stream->bufend - stream->next_frame;
-                    DEBUG("有不完整 PCM 数据帧,%d \n",remainbytes);
+                    //DEBUG("有不完整 PCM 数据帧,%d \n",remainbytes);
                     memcpy(streamtmpbuf,stream->next_frame,remainbytes);
                     memcpy(streamtmpbuf+remainbytes,gnode->buf,gnode->size);
                     gnode->size += remainbytes;
@@ -31,11 +30,9 @@ enum mad_flow input(void *data,
 
                 data_d->list_addr->Release(gnode);
 
-
-
                 return MAD_FLOW_CONTINUE;
             }
-            usleep(10000);
+            usleep(100000);
         } else break;
     }
 

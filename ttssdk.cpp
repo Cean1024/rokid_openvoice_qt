@@ -14,12 +14,12 @@ int TtsSdk::speeck(std::string strings)
      return tts->speak(strings.c_str());
 }
 
-int TtsSdk::init(speech::PrepareOptions &popts, callback_tts_func func)
+int TtsSdk::init(speech::PrepareOptions &popts, callback_tts_func func, void *data)
 {
 
     handleresult = func;
     tts->prepare(popts);
-
+    this->data = data;
 
     // 在prepare后任意时刻，都可以调用config修改配置
     // 默认配置codec = PCM, declaimer = ZH
@@ -45,6 +45,6 @@ void TtsSdk::run()
         if (!tts->poll(result))
             break;
         // 处理result
-        handleresult(result);
+        handleresult(result,data);
     }
 }

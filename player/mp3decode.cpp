@@ -32,7 +32,6 @@ r_status mp3decode::decode(void *data)
 
     /* start decoding */
     result = mad_decoder_run (&decoder, MAD_DECODER_MODE_SYNC);
-
     return result;
 }
 void mp3decode::release()
