@@ -18,12 +18,13 @@ public:
     ~mp3decode();
     r_status registe_callback(callback_input_func inputf,callback_out_func outputf);
     r_status decode(void *data);
+    void release();
 
 private:
     callback_out_func outputfunc;
     callback_input_func inputfunc;
     struct mad_decoder decoder;
-    void release();
+
 };
 
 #endif // MP3DECOD_H

@@ -42,9 +42,17 @@ r_status Player::stop()
         thread.join();
         audio.stop();
         list.clean();
-
+        mp3.release();
        flag =!flag;
     }
+    return SUCCESS;
+}
+
+r_status Player::fillaudiodata(char *buf,int size)
+{
+    listnode_d * node = list.CreateNode();
+    memcpy(node->buf,buf,node->size);
+    list.Insert(node);
     return SUCCESS;
 }
 
@@ -52,8 +60,13 @@ void Player::run()
 {
     //DEBUG("play thread run\n");
     data_d.playflag = start_play;
-    usleep(100000);
+    usleep(1000000);
     int ret = mp3.decode((void *)&data_d);
-    DEBUG("play thread stop ,ret:%d\n",ret);
-    //if(next_func) next_func(data);
+
+    //DEBUG("play thread stop ,ret:%d\n",ret);
+    if(data_d.playflag == start_play){
+        sleep(20);
+        if(next_func) next_func(data);
+    }
+
 }

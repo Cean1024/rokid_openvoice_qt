@@ -2,7 +2,7 @@
 #include "mp3decode.h"
 #include "alsahandle.h"
 #include "player.h"
-
+#include "siglelist.h"
 
 static char streamtmpbuf[MEMPOOLBUFSIZED];
 
@@ -32,6 +32,8 @@ enum mad_flow input(void *data,
 
                 return MAD_FLOW_CONTINUE;
             }
+            if(siglelist::getInstance()->gethttpdlstatus() \
+                    == httpdl_finish) break;
             usleep(100000);
         } else break;
     }

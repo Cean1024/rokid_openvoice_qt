@@ -126,5 +126,7 @@ r_status Httpdl::setUrl(std::string &url)
 void Httpdl::run()
 {
     std::string mime;
+    siglelist::getInstance()->sethttpdlstatus(httpdl_start);
     HttpGetFile(url,mime);
+    siglelist::getInstance()->sethttpdlstatus(httpdl_finish);
 }

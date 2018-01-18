@@ -30,21 +30,23 @@ public:
 
     r_status start();
     r_status stop();
+    r_status fillaudiodata(char *buf,int size);
 
-    LinkList list;
+
 
 protected:
     void virtual run();
     Poco::Thread thread;
 
 private:
+    struct audiodata data_d;
+    AlsaHandle audio;
+    mp3decode mp3;
+    LinkList list;
 
     bool flag;
     void *data;
     next_cb next_func;
-    struct audiodata data_d;
-    AlsaHandle audio;
-    mp3decode mp3;
 
 };
 

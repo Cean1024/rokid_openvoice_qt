@@ -16,7 +16,7 @@ void action_play(JSON::Object::Ptr &item,void *data);
 void action_stop(JSON::Object::Ptr &item,void *data);
 void action_voice(JSON::Object::Ptr &item,void *data);
 void handlenext(void *data);
-struct noded{
+struct noded {
     void *data1;
     void *data2;
 };
@@ -25,34 +25,16 @@ struct noded{
 int main()
 {
 
-
-    using namespace rokid;
-
     speech::PrepareOptions popts;
-    popts.host = "apigwws.open.rokid.com";
-    popts.port = 443;
-    popts.branch = "/api";
-    // 认证信息，需要申请
-    popts.key = "17E0ECB86CC446BFB62FF0A6A3641B0B";
-    popts.device_type_id = "89A9AD627E124316BD8392D749B5C73B";
-    popts.secret = "1ECCFBCB2298416693A5790304BDF9C9";
-    // 设备名称，类似昵称，可自由选择，不影响认证结果
-    popts.device_id = "keantestaudio";
-/*
-    //SpeechSdk speech_sdk;
+    filehandler fhdl;
+
+    fhdl.Getconfigfile(popts);
+
+
+    //return 0;
     //TtsSdk tts_sdk;
-    //filehandler filehdler;
-    //speech_sdk.init(popts , Handle_speech_result);
+
     //tts_sdk.init(popts , Handle_tts_result);
-
-
-    std::string input;
-    while(1) {
-        DEBUG("waitting\n");
-        std::cin >> input;
-        speech_sdk.speek(input);
-
-    };*/
 
     SpeechSdk speech_sdk;
     Player player(handlenext,(void *)&speech_sdk);
@@ -89,10 +71,7 @@ void handlenext(void *data)
 void handlhttpdl(char *buf,void *param)
 {
     Player *player=(Player *)param;
-    listnode_d * node = player->list.CreateNode();
-    memcpy(node->buf,buf,node->size);
-    player->list.Insert(node);
-
+    player->fillaudiodata(buf,MEMPOOLBUFSIZE);
 }
 
 void action_play(JSON::Object::Ptr &item,void *data)
@@ -106,10 +85,11 @@ void action_play(JSON::Object::Ptr &item,void *data)
     hdl->stop();
     player->stop();
 
-    player->start();
+
     hdl->RegistCb( handlhttpdl, nodes->data1);
     hdl->setUrl(url);
     hdl->start();
+    player->start();
 }
 
 void action_stop(JSON::Object::Ptr &item,void *data)

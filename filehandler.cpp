@@ -13,6 +13,63 @@ filehandler::~filehandler()
 
 }
 
+r_status filehandler::Getconfigfile(speech::PrepareOptions &popts)
+{
+
+    using namespace Poco;
+    std::string tmp =CONFIGFILEPATH;
+    tmp += CONFIGFILENAME;
+    char buf[256];
+    std::ifstream  fileop(tmp);
+    std::string data;
+    if(fileop.is_open()) {
+        while (!fileop.eof()) {
+            fileop.getline(buf,256);
+            tmp =buf;
+            data +=tmp;
+        }
+    }
+
+    JSON::Parser parse;
+    Dynamic::Var json = parse.parse( data );
+    std::cout << json.toString() << std::endl;
+    JSON::Object::Ptr pObj = json.extract<JSON::Object::Ptr>();
+    JSON::Object::Ptr speech_config = pObj->getObject("speech_config");
+
+    json = speech_config->get("host");
+    popts.host =json.toString();
+    //std::cout << popts.host << std::endl;
+
+
+    json = speech_config->get("port");
+    popts.port = json.convert<int>();
+    //std::cout << popts.port << std::endl;
+
+    json = speech_config->get("branch");
+    popts.branch =json.toString();
+    //std::cout << popts.branch << std::endl;
+
+    json = speech_config->get("key");
+    popts.key =json.toString();
+    //std::cout << popts.key << std::endl;
+
+    json = speech_config->get("device_type_id");
+    popts.device_type_id =json.toString();
+    //std::cout << popts.device_type_id << std::endl;
+
+    json = speech_config->get("secret");
+    popts.secret =json.toString();
+    //std::cout << popts.secret << std::endl;
+
+    json = speech_config->get("device_id");
+    popts.device_id =json.toString();
+    //std::cout << popts.device_id << std::endl;
+
+    return SUCCESS;
+
+}
+
+
 void filehandler::Handle_speech_result(speech::SpeechResult &Result)
 {
     /*
@@ -26,7 +83,7 @@ void filehandler::Handle_speech_result(speech::SpeechResult &Result)
     switch (Result.type) {
     case speech::SPEECH_RES_ERROR:{
         printf("Handler ------speech------> err:%d\n",Result.err);
-       };break;
+    };break;
     case speech::SPEECH_RES_INTER:{
         printf("Handler ------speech------> get voice\n");
         f_speech<<"[SPEECH_RES_INTER]"<<std::endl;
@@ -35,7 +92,7 @@ void filehandler::Handle_speech_result(speech::SpeechResult &Result)
         f_speech<<"action:"<<Result.action<<std::endl;
         f_speech<<"extra:"<<Result.extra<<std::endl;
 
-       };break;
+    };break;
     case speech::SPEECH_RES_START:{
         printf("Handler ------speech------> voice start\n");
         f_speech.open(audiofile_speech.audiofilepath.c_str(),std::ios_base::out |std::ios_base::trunc);
@@ -50,7 +107,7 @@ void filehandler::Handle_speech_result(speech::SpeechResult &Result)
             f_speech<<"action:"<<Result.action<<std::endl;
             f_speech<<"extra:"<<Result.extra<<std::endl;
         }
-       };break;
+    };break;
     case speech::SPEECH_RES_CANCELLED:
     case speech::SPEECH_RES_END:{
         printf("Handler ------speech------> voice end\n");
@@ -61,7 +118,7 @@ void filehandler::Handle_speech_result(speech::SpeechResult &Result)
         f_speech<<"extra:"<<Result.extra<<std::endl;
         if(audiofile_speech.file_status > 0 )
             f_speech.close();
-       };break;
+    };break;
 
     case speech::SPEECH_RES_ASR_FINISH:{
         f_speech<<"action:"<<Result.action<<std::endl;
@@ -77,11 +134,11 @@ void filehandler::Handle_tts_result(speech::TtsResult &Result)
     switch (Result.type) {
     case speech::TTS_RES_ERROR:{
         printf("Handler ------tts------> err:%d\n",Result.err);
-       };break;
+    };break;
     case speech::TTS_RES_VOICE:{
         printf("Handler ------tts------> get voice\n");
         f_tts<<Result.voice;
-       };break;
+    };break;
     case speech::TTS_RES_START:{
         printf("Handler ------tts------> voice start\n");
         f_tts.open(audiofile_tts.audiofilepath.c_str(),std::ios_base::out |std::ios_base::trunc);
@@ -92,13 +149,13 @@ void filehandler::Handle_tts_result(speech::TtsResult &Result)
             audiofile_tts.file_status = 1;
             f_tts<<Result.voice;
         }
-       };break;
+    };break;
     case speech::TTS_RES_CANCELLED:
     case speech::TTS_RES_END: {
         printf("Handler ------tts------> voice end\n");
         f_tts<<Result.voice;
         if(audiofile_tts.file_status > 0 )
             f_tts.close();
-       };break;
+    };break;
     }
 }

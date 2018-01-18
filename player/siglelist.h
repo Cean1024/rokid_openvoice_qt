@@ -5,19 +5,29 @@
 #include "tools/linklist/linklist.h"
 
 
+enum httpdlstatus {
+    httpdl_start = 0,
+    httpdl_finish,
+    httpdl_stop
+};
+
 class siglelist
 {
-public:
-    siglelist();
-    ~siglelist();
-    static siglelist *getInstance()
-    {
-        if(lisInstance == NULL)
-            lisInstance = new siglelist;
-    }
 
 private:
-    static siglelist * lisInstance;
+    siglelist();
+    ~siglelist();
+    httpdlstatus global_pram_http_dl_status;
+
+public:
+
+    static siglelist *getInstance()
+    {
+        static siglelist instance;   //局部静态变量
+         return &instance;
+    }
+    void sethttpdlstatus(httpdlstatus status);
+    httpdlstatus gethttpdlstatus();
 
 };
 

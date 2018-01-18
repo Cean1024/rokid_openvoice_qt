@@ -46,5 +46,13 @@ enum returnstatus {
 #define MEMPOOLBUFCOUNT 200
 #define MEMPOOLDEFCOUNT 100
 
+
+/*device info*/
+#define DEVICENAME "keantestaudio"
+#define CONFIGFILEPATH \
+    "/home/samba/work/rokid_openvoice_sdk/rokid_openvoice_qt/rokid_openvoice_qt/"
+#define CONFIGFILENAME "openvoiceconfig.json"
+
+
 #endif // COMMON_H
 

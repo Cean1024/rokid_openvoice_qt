@@ -7,8 +7,10 @@
 #include "Poco/URI.h"
 #include "Poco/Exception.h"
 #include "Poco/Runnable.h"
+#include "player/siglelist.h"
 
 typedef void (*httpdlcb)(char *dldata,void *outdata);
+
 
 class Httpdl:public Poco::Runnable
 {
