@@ -55,8 +55,8 @@ int main()
     };*/
 
     SpeechSdk speech_sdk;
-    //Player player(handlenext,(void *)&speech_sdk);
-    Player player;
+    Player player(handlenext,(void *)&speech_sdk);
+    //Player player;
     JsonHandle Jhandl;
 
     Httpdl hdl;
@@ -83,8 +83,8 @@ int main()
 }
 void handlenext(void *data)
 {
-    //SpeechSdk  * sbody = (SpeechSdk *)data;
-    //sbody->speek("下一首");
+    SpeechSdk  * sbody = (SpeechSdk *)data;
+    sbody->speek("下一首");
 }
 void handlhttpdl(char *buf,void *param)
 {

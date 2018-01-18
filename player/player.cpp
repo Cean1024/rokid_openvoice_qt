@@ -3,9 +3,9 @@
 Player::Player()
 {
     flag = true;
-
+    next_func = NULL;
 }
-/*
+
 Player::Player(next_cb func,void *data)
 {
     flag = true;
@@ -13,7 +13,7 @@ Player::Player(next_cb func,void *data)
     next_func = func;
     this->data = data;
 
-}*/
+}
 Player::~Player()
 {
 
@@ -50,9 +50,9 @@ r_status Player::stop()
 
 void Player::run()
 {
-    DEBUG("play thread run\n");
+    //DEBUG("play thread run\n");
     data_d.playflag = start_play;
-    usleep(1000000);
+    usleep(100000);
     int ret = mp3.decode((void *)&data_d);
     DEBUG("play thread stop ,ret:%d\n",ret);
     //if(next_func) next_func(data);

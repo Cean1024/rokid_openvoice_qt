@@ -24,26 +24,27 @@ class Player:public Poco::Runnable
 {
 public:
     Player();
-    //Player(next_cb func,void *data);
+    Player(next_cb func,void *data);
     ~Player();
+
 
     r_status start();
     r_status stop();
+
     LinkList list;
-    struct audiodata data_d;
-    AlsaHandle audio;
-    mp3decode mp3;
 
 protected:
     void virtual run();
-
+    Poco::Thread thread;
 
 private:
-    Poco::Thread thread;
+
     bool flag;
     void *data;
-    //next_cb next_func;
-
+    next_cb next_func;
+    struct audiodata data_d;
+    AlsaHandle audio;
+    mp3decode mp3;
 
 };
 
