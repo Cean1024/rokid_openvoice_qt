@@ -18,7 +18,9 @@ SOURCES += main.cpp \
     player/siglelist.cpp \
     player/decodecallback.cpp \
     tools/http/httpdl.cpp \
-    tools/json/jsonhandle.cpp
+    tools/json/jsonhandle.cpp \
+    handlecallbacks.cpp \
+    player/pcmplayer.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -34,5 +36,7 @@ HEADERS += \
     tools/linklist/linklist.h \
     player/siglelist.h \
     tools/http/httpdl.h \
-    tools/json/jsonhandle.h
+    tools/json/jsonhandle.h \
+    handlecallbacks.h \
+    player/pcmplayer.h
 

@@ -54,5 +54,8 @@ enum returnstatus {
 #define CONFIGFILENAME "openvoiceconfig.json"
 
 
+/*play config*/
+#define PLAYWAITINGTIME 23
+
 #endif // COMMON_H
 

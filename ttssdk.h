@@ -15,7 +15,7 @@ public:
     TtsSdk();
     ~TtsSdk();
     int init(speech::PrepareOptions &popts ,callback_tts_func func,void *data);
-    int speeck(std::__cxx11::string strings);
+    int speek(std::__cxx11::string strings);
 
     virtual void run();
 private:

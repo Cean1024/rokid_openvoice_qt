@@ -64,7 +64,7 @@ void Player::run()
     int ret = mp3.decode((void *)&data_d);
 
     //DEBUG("play thread stop ,ret:%d\n",ret);
-    int count =20;
+    int count = PLAYWAITINGTIME;
     while (data_d.playflag == start_play && count >0 ){
         sleep(1);
         count--;

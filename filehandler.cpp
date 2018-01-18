@@ -142,7 +142,7 @@ void filehandler::Handle_tts_result(speech::TtsResult &Result)
     case speech::TTS_RES_START:{
         printf("Handler ------tts------> voice start\n");
         f_tts.open(audiofile_tts.audiofilepath.c_str(),std::ios_base::out |std::ios_base::trunc);
-        if(!f_tts){
+        if(!f_tts) {
             printf("file open failed\n");
             audiofile_tts.file_status = -1;
         } else {

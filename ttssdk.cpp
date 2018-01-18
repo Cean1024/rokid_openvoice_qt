@@ -9,7 +9,7 @@ TtsSdk::~TtsSdk()
 {
 
 }
-int TtsSdk::speeck(std::string strings)
+int TtsSdk::speek(std::string strings)
 {
      return tts->speak(strings.c_str());
 }
@@ -30,7 +30,7 @@ int TtsSdk::init(speech::PrepareOptions &popts, callback_tts_func func, void *da
     tts->config(topts);
 */
     // 使用tts
-    int32_t id = tts->speak("我是会说话的机器人,我最爱吃的食物是机油,最喜欢的运动是聊天");
+    //int32_t id = tts->speak("我是会说话的机器人,我最爱吃的食物是机油,最喜欢的运动是聊天");
     //int32_t id = tts->speak("机器人");
 
     // 获取tts结果。api阻塞式，应考虑在独立线程中运行。

@@ -12,7 +12,7 @@ LinkList::LinkList()
 LinkList::LinkList(int size)
 {
 
-        pool = new MemoryPool(size,MEMPOOLDEFCOUNT,MEMPOOLBUFCOUNT);
+        pool = new MemoryPool(size);
         CreateList();
 
 }
