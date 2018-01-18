@@ -32,12 +32,14 @@ r_status mp3decode::decode(void *data)
 
     /* start decoding */
     result = mad_decoder_run (&decoder, MAD_DECODER_MODE_SYNC);
+
+    mad_decoder_finish(&decoder);
     return result;
 }
 void mp3decode::release()
 {
     /* release the decoder */
-    mad_decoder_finish(&decoder);
+
 }
 
 r_status mp3decode::registe_callback(callback_input_func inputf,callback_out_func outputf)

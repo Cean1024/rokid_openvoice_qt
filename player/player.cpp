@@ -42,7 +42,7 @@ r_status Player::stop()
         thread.join();
         audio.stop();
         list.clean();
-        mp3.release();
+
        flag =!flag;
     }
     return SUCCESS;
@@ -64,9 +64,12 @@ void Player::run()
     int ret = mp3.decode((void *)&data_d);
 
     //DEBUG("play thread stop ,ret:%d\n",ret);
-    if(data_d.playflag == start_play){
-        sleep(20);
-        if(next_func) next_func(data);
+    int count =20;
+    while (data_d.playflag == start_play && count >0 ){
+        sleep(1);
+        count--;
     }
+    if(data_d.playflag == start_play)
+        if(next_func) next_func(data);
 
 }
