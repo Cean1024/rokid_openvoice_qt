@@ -8,6 +8,7 @@ enum sdktype {
     sdktype_tts=0,
     sdktype_speech
 };
+
 typedef int r_status;
 
 enum returnstatus {

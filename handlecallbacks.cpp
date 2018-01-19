@@ -56,7 +56,7 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
         printf("Handler ------speech------> err:%d\n",Result.err);
        };break;
     case speech::SPEECH_RES_INTER: {
-        printf("Handler ------speech------> get voice\n");
+        printf("Handler ------speech------> SPEECH_RES_INTER\n");
         std::cout<<"[SPEECH_RES_INTER]"<<std::endl;
         std::cout<<"nlp:"<<Result.nlp<<std::endl;
         std::cout<<"asr:"<<Result.asr<<std::endl;
@@ -65,12 +65,12 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
 
        };break;
     case speech::SPEECH_RES_START:{
-        printf("Handler ------speech------> voice start\n");
+        printf("Handler ------speech------> SPEECH_RES_START\n");
 
        };break;
     case speech::SPEECH_RES_CANCELLED:
     case speech::SPEECH_RES_END:{
-        printf("Handler ------speech------> voice end\n");
+        printf("Handler ------speech------> SPEECH_RES_END\n");
         handl->handle(Result.action);
        };break;
 
@@ -79,34 +79,47 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
     };break;
     }
 }
-//std::ofstream audioop;
+
 void Handle_tts_result(speech::TtsResult &Result, void *data)
 {
-    Pcmplayer * pcmplayer = (Pcmplayer *)data;
+    struct noded *pdata = (struct noded *)data;
+    Player * player = (Player *)pdata->data1;
+    Pcmplayer * pcmplayer = (Pcmplayer *)pdata->data2;
 
     switch (Result.type) {
     case speech::TTS_RES_ERROR:{
         printf("Handler ------tts------> err:%d\n",Result.err);
        };break;
     case speech::TTS_RES_VOICE:{
-        printf("Handler ------tts------> get voice  size:%d\n",Result.voice->size());
-     //   audioop << *Result.voice;
+
         pcmplayer->fillaudiodata(\
                     (char *)Result.voice->c_str(),\
                     Result.voice->size());
+        printf("Handler ------tts------> get voice  size:%d\n",Result.voice->size());
+
        };break;
-    case speech::TTS_RES_START:{
-        printf("Handler ------tts------> voice start\n");
+    case speech::TTS_RES_START: {
+
+        player->pause();
+        char buf[PCMPLAYERFRAMSIZE];
+        memset(buf,0,PCMPLAYERFRAMSIZE);
         pcmplayer->start();
-      //  audioop.open("audio.pcm",std::ios::out\
-       //              | std::ios::app |std::ios::binary);
+        pcmplayer->fillaudiodata(buf,PCMPLAYERFRAMSIZE);
+        printf("Handler ------tts------> voice start \n");
        };break;
     case speech::TTS_RES_CANCELLED:
     case speech::TTS_RES_END:{
-        printf("Handler ------tts------> voice end\n");
+
+         //printf("Handler ------tts------> voice end 1\n");
          pcmplayer->finish();
-      //  audioop.close();
+         //printf("Handler ------tts------> voice end 2\n");
+         while(
+                pcmplayer->returnstatus() \
+                != Pcmplayer_stop )
+             usleep(100000);
+         //printf("Handler ------tts------> voice end 3\n");
+         player->resume();
+         printf("Handler ------tts------> voice end 4\n");
        };break;
     }
-
 }

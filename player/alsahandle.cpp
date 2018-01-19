@@ -33,7 +33,6 @@ void AlsaHandle::stop()
         snd_pcm_close(pcm_param.playback_handle);
         pcm_param.playback_handle=NULL;
     }
-
 }
 r_status AlsaHandle::init (int sample_rate,int channels , int sample_bit)
 {
@@ -204,7 +203,7 @@ r_status AlsaHandle::audioinit ()
 r_status AlsaHandle::writei(char *buf ,int frames)
 {
     int err;
-    err = snd_pcm_writei( pcm_param.playback_handle , buf, frames);
+    err = snd_pcm_writei ( pcm_param.playback_handle , buf, frames);
     if ( err == -EPIPE) {
 
         fprintf(stderr, "underrun accourred, frames:%d\n",frames);

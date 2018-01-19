@@ -11,6 +11,7 @@ enum httpdlstatus {
     httpdl_stop
 };
 
+
 class siglelist
 {
 
@@ -28,6 +29,7 @@ public:
     }
     void sethttpdlstatus(httpdlstatus status);
     httpdlstatus gethttpdlstatus();
+
 
 };
 

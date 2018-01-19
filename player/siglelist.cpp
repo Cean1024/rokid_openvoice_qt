@@ -18,3 +18,4 @@ httpdlstatus siglelist::gethttpdlstatus()
 
     return global_pram_http_dl_status;
 }
+

@@ -14,7 +14,8 @@ enum mad_flow input(void *data,
     listnode_d *gnode;
 
     while(1) {
-        if ( data_d->playflag == start_play ) {
+        if ( data_d->playflag == start_play || \
+             data_d->playflag == resume_play ) {
 
             int ret = data_d->list_addr->get(&gnode);
             if(ret != ERROR ) {
@@ -35,7 +36,8 @@ enum mad_flow input(void *data,
             if(siglelist::getInstance()->gethttpdlstatus() \
                     == httpdl_finish) break;
             usleep(100000);
-        } else break;
+        } else if(data_d->playflag == pause_play) usleep(100000);
+        else if(data_d->playflag == stop_play) break;
     }
 
     return MAD_FLOW_STOP;
@@ -71,6 +73,9 @@ enum mad_flow output(void *data,
 
     struct audiodata *data_d = (struct audiodata *)data;
     /* pcm->samplerate contains the sampling frequency */
+
+
+
 
     nchannels = pcm->channels;
     nsamples  = pcm->length;
@@ -116,8 +121,12 @@ enum mad_flow output(void *data,
         break;
     }
 
+    while (data_d->playflag == pause_play ) {
+
+            usleep(100000);
+
+    }
     data_d->audio_addr->writei(databuf2,1152);
 
     return MAD_FLOW_CONTINUE;
-
 }

@@ -12,20 +12,22 @@ int main()
     Pcmplayer pcmplayer;
     JsonHandle Jhandl;
     Httpdl hdl;
-    struct noded nodes;
+    struct noded Jsonhandlerdata,ttshandledata;
 
-    nodes.data1 = &player;
-    nodes.data2 = &hdl;
+    Jsonhandlerdata.data1 = &player;
+    Jsonhandlerdata.data2 = &hdl;
+    ttshandledata.data1 = &player;
+    ttshandledata.data2 = &pcmplayer;
 
     fhdl.Getconfigfile(popts);
 
-    Jhandl.cb_registe(action_play,(void *)&nodes,action_type_media);
-    Jhandl.cb_registe(action_stop,(void *)&nodes,action_type_stop);
+    Jhandl.cb_registe(action_play,(void *)&Jsonhandlerdata,action_type_media);
+    Jhandl.cb_registe(action_stop,(void *)&Jsonhandlerdata,action_type_stop);
     Jhandl.cb_registe(action_voice,(void *)&tts_sdk,action_type_voice);
 
 
     speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
-    tts_sdk.init(popts ,Handle_tts_result,(void *)&pcmplayer);
+    tts_sdk.init(popts ,Handle_tts_result,(void *)&ttshandledata);
     std::string input;
     while(1) {
         DEBUG("waitting\n");

@@ -4,11 +4,11 @@
 #include "common.h"
 #include <alsa/asoundlib.h>
 
-#define defaultframe 1152
+#define defaultframe 1024
 #define n_buf 10
 //#define ALSAPCM "/dev/pcmC0D0p"
 
-#define AUTOSETFRAME
+//#define AUTOSETFRAME
 
 struct snd_pcm_params {
     snd_pcm_t *playback_handle; //PCM 设备句柄

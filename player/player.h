@@ -9,7 +9,9 @@
 
 enum playstatus {
     stop_play =0,
-    start_play
+    start_play,
+    pause_play,
+    resume_play
 };
 
 struct audiodata {
@@ -30,6 +32,9 @@ public:
 
     r_status start();
     r_status stop();
+    r_status pause();
+    r_status resume();
+
     r_status fillaudiodata(char *buf,int size);
 
 

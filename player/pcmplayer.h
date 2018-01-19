@@ -8,10 +8,12 @@
 #define PCMPLAYERFRAMSIZE 4096
 
 enum Pcmplayer_status{
-    Pcmplayer_start,
+    Pcmplayer_start=0,
     Pcmplayer_finish,
-    Pcmplayer_begain
+    Pcmplayer_begain,
+    Pcmplayer_stop
 };
+
 
 class Pcmplayer:public Poco::Runnable
 {
@@ -21,6 +23,7 @@ public:
     r_status fillaudiodata(char *buf,int size);
     r_status start();
     r_status finish();
+    Pcmplayer_status returnstatus();
 
 
 protected:
