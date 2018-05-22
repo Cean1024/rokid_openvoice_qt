@@ -56,7 +56,7 @@ enum returnstatus {
 
 
 /*play config*/
-#define PLAYWAITINGTIME 23
+#define PLAYWAITINGTIME 10
 
 #endif // COMMON_H
 
