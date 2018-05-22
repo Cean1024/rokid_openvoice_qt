@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     tools/http/httpdl.cpp \
     tools/json/jsonhandle.cpp \
     handlecallbacks.cpp \
-    player/pcmplayer.cpp
+    player/pcmplayer.cpp \
+    netserver.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -38,5 +39,7 @@ HEADERS += \
     tools/http/httpdl.h \
     tools/json/jsonhandle.h \
     handlecallbacks.h \
-    player/pcmplayer.h
+    player/pcmplayer.h \
+    netserver.h \
+    wavfile.h
 

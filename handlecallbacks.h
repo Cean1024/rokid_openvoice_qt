@@ -6,6 +6,8 @@
 #include "tools/http/httpdl.h"
 #include "tools/json/jsonhandle.h"
 #include "player/pcmplayer.h"
+#include "netserver.h"
+#include "wavfile.h"
 
 
 void Handle_speech_result(speech::SpeechResult &Result,void *data);
@@ -15,7 +17,7 @@ void action_play(JSON::Object::Ptr &item,void *data);
 void action_stop(JSON::Object::Ptr &item,void *data);
 void action_voice(JSON::Object::Ptr &item,void *data);
 void handlenext(void *data);
-
+void openvoicerunnable(void *data);
 struct noded {
     void *data1;
     void *data2;

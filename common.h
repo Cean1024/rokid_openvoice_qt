@@ -4,6 +4,9 @@
 #include <fstream>
 #include <unistd.h>
 
+
+#define S_NAME "openvice"
+#define S_VERSION "openvice"
 enum sdktype {
     sdktype_tts=0,
     sdktype_speech
@@ -37,7 +40,7 @@ enum returnstatus {
 };
 
 #define DEBUG(format,args...) printf(format,##args)
-
+#define LOGOUT(format,args...) printf("%s %s " format "\n",S_NAME,__func__,##args)
 
 
 
