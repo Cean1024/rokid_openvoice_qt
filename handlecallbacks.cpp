@@ -44,6 +44,7 @@ void action_voice(JSON::Object::Ptr &item,void *data)
     Dynamic::Var tmp = item->get("tts");
     std::string tts = tmp.toString();
     tts_sdk->speek(tts);
+    sleep(2);
     std::cout <<tts<< std::endl;
 }
 
@@ -52,7 +53,7 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
     JsonHandle * handl = (JsonHandle *)data;
 
     switch (Result.type) {
-    case speech::SPEECH_RES_ERROR:{
+    case speech::SPEECH_RES_ERROR: {
         printf("Handler ------speech------> err:%d\n",Result.err);
     };break;
     case speech::SPEECH_RES_INTER: {
@@ -64,12 +65,12 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
         std::cout<<"extra:"<<Result.extra<<std::endl;
 
     };break;
-    case speech::SPEECH_RES_START:{
+    case speech::SPEECH_RES_START: {
         printf("Handler ------speech------> SPEECH_RES_START\n");
 
     };break;
     case speech::SPEECH_RES_CANCELLED:
-    case speech::SPEECH_RES_END:{
+    case speech::SPEECH_RES_END: {
         printf("Handler ------speech------> SPEECH_RES_END\n");
         handl->handle(Result.action);
     };break;
@@ -154,7 +155,6 @@ void openvoicerunnable(void *data)
     char buf[4096];
     int ret;
     int count=0;
-
     createWavHead  head_c;
     while(1) {
 #if 0
@@ -171,12 +171,15 @@ void openvoicerunnable(void *data)
         }
         speech_sdk.speek_voice(buf,ret,voice_end);
         close(fd);
+#endif
 
+#if 0
         DEBUG("waitting\n");
         sleep(100);
         //std::cin >> input;
         //speech_sdk.speek(input);
 #endif
+
 #if 0
         server.listenandaccept();
 
