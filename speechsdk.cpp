@@ -4,6 +4,7 @@ SpeechSdk::SpeechSdk()
 {
     handleresult=NULL;
     voice_id =-1;
+    sh_status = handle_end;
 }
 
 SpeechSdk::~SpeechSdk()
@@ -32,6 +33,7 @@ int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
             //return FAILED;
         }
         voice_id = speech->start_voice();
+        sh_status = handle_start;
     };break;
     case voice_cancal:
         speech->cancel(voice_id);
@@ -55,11 +57,11 @@ int SpeechSdk::speech_init(speech::PrepareOptions &popts)
     //speech->put_text("若琪，来首音乐");
 
 }
-int SpeechSdk::init(rokid::speech::PrepareOptions &popts, callback_speech_func func,void * data)
+int SpeechSdk::init (rokid::speech::PrepareOptions &popts, callback_speech_func func,void * data)
 {
     handleresult = func;
     this->data = data;
-
+    this->popts = popts;
     speech_init(popts);
 
     thread.start(*this);
@@ -74,7 +76,10 @@ void SpeechSdk::speech_run()
         if (!speech->poll(result))
             break;
         // 处理result
+        if(result.type == speech::SPEECH_RES_END ) sh_status = handle_processing;
         handleresult(result,data);
+        if(result.type == speech::SPEECH_RES_END ) sh_status = handle_end;
+        else if( result.type == speech::SPEECH_RES_ERROR ) sh_status = handle_err;
     }
 }
 
