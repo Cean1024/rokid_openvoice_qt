@@ -12,15 +12,21 @@ Pcmplayer::~Pcmplayer()
 }
 r_status Pcmplayer::start()
 {
-     playflag = Pcmplayer_start;
-     audio.init(12000,2,16);
-     if(!thread.isRunning())thread.join();
-     thread.start(*this);
+    if(playflag == Pcmplayer_stop) {
+        audio.init(12000,2,16);
+        if(!thread.isRunning())thread.join();
+        thread.start(*this);
+        playflag = Pcmplayer_start;
+    }
 }
 
 r_status Pcmplayer::finish()
 {
-    playflag = Pcmplayer_finish;
+    if(playflag == Pcmplayer_start) {
+        playflag = Pcmplayer_finish;
+        while ( playflag != Pcmplayer_stop ) usleep(10000);
+        audio.stop();
+    }
 }
 
 Pcmplayer_status Pcmplayer::returnstatus()
