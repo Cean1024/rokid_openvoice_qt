@@ -79,5 +79,5 @@ void Pcmplayer::run()
     playflag = Pcmplayer_stop;
 
     DEBUG("out Pcmplayer %s\n",__func__);
-    audio.stop();
+
 }
