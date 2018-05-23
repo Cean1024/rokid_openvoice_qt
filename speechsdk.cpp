@@ -25,10 +25,11 @@ int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
         voice_id =-1;
 
     };break;
-    case voice_start:{
+    case voice_start: {
         if(voice_id > 0) {
             LOGOUT("voice_id is not empty, please end or cancal it first");
-            return FAILED;
+            speech->cancel(voice_id);
+            //return FAILED;
         }
         voice_id = speech->start_voice();
     };break;
