@@ -36,7 +36,8 @@ enum returnstatus {
     PLAYSTART,
     PLAYSTOP,
     PLAYRUNING,
-    PLAYWAITING
+    PLAYWAITING,
+    TILL_THE_END
 };
 
 #define DEBUG(format,args...) printf(format,##args)
@@ -60,6 +61,13 @@ enum returnstatus {
 
 /*play config*/
 #define PLAYWAITINGTIME 10
+
+/*loop rev audio set */
+#define REV_SAMPLERATE 16000
+#define REV_CH 1
+#define REV_BITS 16
+#define REV_FRAMESIZE (REV_SAMPLERATE/100)
+#define REV_AFRAMEBUFSIZE (REV_FRAMESIZE * REV_CH *REV_BITS /8)
 
 #endif // COMMON_H
 
