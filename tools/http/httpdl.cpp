@@ -68,7 +68,7 @@ r_status Httpdl::HttpGetFile(std::string &url,std::string &mime)
     while (size < ss && !objHttpResIs.eof()) {
 
         objHttpResIs.read(buf,(ss-size > MEMPOOLBUFSIZE ) ? MEMPOOLBUFSIZE:(ss-size));
-        this->handledl(buf,outdata);
+        if(this->handledl(buf,outdata) != SUCCESS)LOGOUT(" handledl err!!");
         size += MEMPOOLBUFSIZE;
         printf("dl proccess :%f%%\r",size*100.0 /ss);
     }

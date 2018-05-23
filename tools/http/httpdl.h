@@ -9,7 +9,7 @@
 #include "Poco/Runnable.h"
 #include "player/siglelist.h"
 
-typedef void (*httpdlcb)(char *dldata,void *outdata);
+typedef r_status (*httpdlcb)(char *dldata,void *outdata);
 
 
 class Httpdl:public Poco::Runnable
