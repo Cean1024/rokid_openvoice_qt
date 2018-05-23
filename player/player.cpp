@@ -59,13 +59,13 @@ r_status Player::pause()
             || data_d.playflag == resume_play ) {
         data_d.playflag = pause_play;
         usleep(100000);
-        //audio.stop();
+        audio.stop();
     }
 }
 r_status Player::resume()
 {
-    if( data_d.playflag == pause_play ) {
-        //audio.init(44100,2,16);
+    if ( data_d.playflag == pause_play ) {
+        audio.init(44100,2,16);
         data_d.playflag = resume_play;
     }
 }
