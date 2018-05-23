@@ -43,9 +43,10 @@ void action_voice(JSON::Object::Ptr &item,void *data)
     TtsSdk *tts_sdk = (TtsSdk *)data;
     Dynamic::Var tmp = item->get("tts");
     std::string tts = tmp.toString();
+
+    LOGOUT("tts:%s",tts.c_str());
     tts_sdk->speek(tts);
-    sleep(2);
-    std::cout <<tts<< std::endl;
+
 }
 
 void Handle_speech_result(speech::SpeechResult &Result, void *data)
