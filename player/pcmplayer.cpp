@@ -40,14 +40,17 @@ r_status Pcmplayer::fillaudiodata(char *buf,int size)
     listnode_d * node ;
     while( size >= PCMPLAYERFRAMSIZE ) {
         node = list->CreateNode();
-        memcpy(node->buf,buf,PCMPLAYERFRAMSIZE);
-        node->size = PCMPLAYERFRAMSIZE;
-        list->Insert(node);
+        if( node ) {
+            memcpy(node->buf,buf,PCMPLAYERFRAMSIZE);
+            node->size = PCMPLAYERFRAMSIZE;
+            list->Insert(node);
+        }
         buf+=PCMPLAYERFRAMSIZE;
         size -=PCMPLAYERFRAMSIZE;
     }
     if(size>0) {
         node = list->CreateNode();
+        if(node==nullptr)return FAILED;
         memcpy(node->buf,buf,size);
         node->size = size;
         list->Insert(node);
