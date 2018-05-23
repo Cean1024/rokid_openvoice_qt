@@ -149,7 +149,7 @@ void openvoicerunnable(void *data)
     speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
     tts_sdk.init(popts ,Handle_tts_result,(void *)&ttshandledata);
     //std::string input;
-    netserver server("192.168.199.245",9009);
+    netserver server("192.168.199.245",9999);
     char buf[4096];
     int ret;
     int count=0;
