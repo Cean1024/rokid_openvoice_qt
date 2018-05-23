@@ -5,10 +5,10 @@ void handlenext(void *data)
     SpeechSdk  * sbody = (SpeechSdk *)data;
     sbody->speek("下一首");
 }
-void handlhttpdl(char *buf,void *param)
+r_status handlhttpdl(char *buf,void *param)
 {
     Player *player=(Player *)param;
-    player->fillaudiodata(buf,MEMPOOLBUFSIZE);
+    return player->fillaudiodata(buf,MEMPOOLBUFSIZE);
 }
 
 void action_play(JSON::Object::Ptr &item,void *data)
