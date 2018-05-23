@@ -29,8 +29,8 @@ protected:
 
 private:
     MemoryPool *pool;
-    listnode_d head;
-    listnode_d tail;
+    listnode_d *head;
+    listnode_d *tail;
 };
 
 #endif // LINKLIST_H

@@ -25,17 +25,18 @@ LinkList::~LinkList()
 
 r_status LinkList::CreateList()
 {
-    head.next = &tail;
-    tail.next=NULL;
+    head = nullptr;
+    tail = nullptr;
     return SUCCESS;
 }
 listnode_d * LinkList::CreateNode()
 {
-    listnode_d *  node = NULL;
+    listnode_d *  node = nullptr;
     node = new listnode_d;
     if(node) {
         node->buf = reinterpret_cast <char*>(pool->get());
         node->size = pool->blockSize();
+        node->next=nullptr;
     }
     return node;
 }
@@ -45,54 +46,52 @@ void  LinkList::Release(listnode_d *data)
         pool->release(data->buf);
         delete data;
     }
-    data = NULL;
+    data = nullptr;
 }
 
 r_status LinkList::clean()
 {
     listnode_d *node;
-    while( head.next != &tail) {
-
-        if(head.next->next != NULL ) {
-            node = head.next;
-            head.next = head.next->next;
-
-        } else {
-            node = head.next;
-            head.next = &tail;
-            tail.next = NULL;
-        }
+    while( head != tail && tail != nullptr) {
+        node = head;
+        head = head->next;
         Release(node);
     }
+
+    Release(head);
+    head=nullptr;
+    tail=nullptr;
 
     return SUCCESS;
 }
 
 r_status LinkList::Insert(listnode_d *data)
 {
+
     if(!data) return ERROR;
-    if(tail.next == NULL) {
-        head.next = data;
-        tail.next = data;
-        data->next =NULL;
+    if(tail != nullptr ) {
+
+        tail->next = data;
+        tail=data;
+
     } else {
-        tail.next->next = data;
-        tail.next =data;
-        data->next =NULL;
+
+        tail = data;
+        head =data;
+
     }
+
+    tail->next=nullptr;
+
     return SUCCESS;
 }
 r_status LinkList::get(listnode_d **data)
 {
-    if( head.next == &tail) return ERROR;
-    if(head.next->next != NULL ) {
-        (*data)= head.next;
-        head.next = head.next->next;
-        (*data)->next =NULL;
-    } else {
-        (*data) = head.next;
-        head.next = &tail;
-        tail.next = NULL;
-    }
+    if(  head == nullptr ) return ERROR;
+
+        (*data)= head;
+        head = head->next;
+        if(head==nullptr)tail=nullptr;
+
     return SUCCESS;
 }
