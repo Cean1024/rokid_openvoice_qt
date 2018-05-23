@@ -70,10 +70,9 @@ void Pcmplayer::run()
 
     while(1) {
 
-        ret =list->get(&node);
-        if(ret == SUCCESS )
-            audio.writei(node->buf,node->size/4);
-        else if( playflag == Pcmplayer_start) usleep(100000);
+        ret = list->get(&node);
+        if(ret == SUCCESS ) audio.writei(node->buf,node->size/4);
+        else if( playflag == Pcmplayer_start) usleep(10000);
         else if( playflag == Pcmplayer_finish) break;
     }
     sleep(1);
