@@ -27,6 +27,7 @@ r_status LinkList::CreateList()
 {
     head = nullptr;
     tail = nullptr;
+    readpointer = nullptr;
     return SUCCESS;
 }
 listnode_d * LinkList::CreateNode()
@@ -52,13 +53,11 @@ void  LinkList::Release(listnode_d *data)
 r_status LinkList::clean()
 {
     listnode_d *node;
-    while( head != tail && tail != nullptr) {
+    while ( head != nullptr ) {
         node = head;
         head = head->next;
         Release(node);
     }
-
-    Release(head);
     head=nullptr;
     tail=nullptr;
 
@@ -87,11 +86,26 @@ r_status LinkList::Insert(listnode_d *data)
 }
 r_status LinkList::get(listnode_d **data)
 {
-    if(  head == nullptr ) return ERROR;
+    if( head == nullptr ) return ERROR;
 
-        (*data)= head;
+        (*data) = head;
         head = head->next;
-        if(head==nullptr)tail=nullptr;
+        if ( head == nullptr) tail = nullptr;
 
+    return SUCCESS;
+}
+r_status LinkList::read(listnode_d **data,rl_status rls)
+{
+    if(data == nullptr) return FAILED;
+    if (rls = read_list) {
+
+        if(readpointer == nullptr) readpointer = head;
+        *data = readpointer;
+        readpointer=readpointer->next;
+        if(readpointer == nullptr)
+            return  TILL_THE_END;
+
+    } else if ( rls = read_head )  *data = head;
+     else if(rls == read_tail)  *data = tail;
     return SUCCESS;
 }

@@ -4,6 +4,11 @@
 #include "common.h"
 
 
+enum rl_status {
+    read_head,
+    read_tail,
+    read_list
+};
 
 typedef struct listnode {
     char *buf;
@@ -20,6 +25,7 @@ public:
     ~LinkList();
     r_status Insert(listnode_d *data);
     r_status get(listnode_d **data);
+    r_status read(listnode_d **data,rl_status rls);
     listnode_d * CreateNode();
     void  Release(listnode_d *data);
     r_status clean();
@@ -31,6 +37,7 @@ private:
     MemoryPool *pool;
     listnode_d *head;
     listnode_d *tail;
+    listnode_d *readpointer;
 };
 
 #endif // LINKLIST_H
