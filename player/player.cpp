@@ -72,6 +72,7 @@ r_status Player::resume()
 r_status Player::fillaudiodata(char *buf,int size)
 {
     listnode_d * node = list.CreateNode();
+    if( node == nullptr ) return FAILED;
     memcpy(node->buf,buf,node->size);
     list.Insert(node);
     return SUCCESS;
@@ -81,7 +82,8 @@ void Player::run()
 {
     DEBUG("play thread run\n");
 
-    int ret = mp3.decode((void *)&data_d);
+    int ret = mp3.decode( (void *)&data_d);
+    LOGOUT("decode ret:%d",ret);
 
     //DEBUG("play thread stop ,ret:%d\n",ret);
     int count = PLAYWAITINGTIME;
@@ -89,7 +91,7 @@ void Player::run()
         sleep(1);
         count--;
     }
-    if(data_d.playflag == start_play || data_d.playflag == resume_play)
+    if(data_d.playflag == start_play || data_d.playflag == resume_play )
         if(next_func) next_func(data);
 
 }
