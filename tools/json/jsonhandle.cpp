@@ -39,7 +39,7 @@ r_status JsonHandle::handle(std::string &data)
 
     for ( ; it != pArry->end(); it++ )
     {  
-        //std::cout << it->toString() << std::endl;
+        std::cout << it->toString() << std::endl;
         parse.reset();
         json =  parse.parse(it->toString());
         JSON::Object::Ptr arrydata = json.extract<JSON::Object::Ptr>();
