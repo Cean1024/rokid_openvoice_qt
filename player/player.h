@@ -46,7 +46,7 @@ protected:
 private:
     struct audiodata data_d;
     AlsaHandle audio;
-    mp3decode mp3;
+    mp3decode *mp3;
     LinkList list;
 
     bool flag;
