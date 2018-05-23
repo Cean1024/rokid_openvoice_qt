@@ -204,14 +204,39 @@ void openvoicerunnable(void *data)
 
 #if 1
         server.listenandaccept();
-        speech_sdk.speek_voice(nullptr,0,voice_start);
-        do{
-            ret = server.getdata(buf,4096);
-            if (ret > 0) speech_sdk.speek_voice(buf,ret,voice_data);
-            else break;
+        {
+            LinkList revdata(REV_AFRAMEBUFSIZE);
+            listnode_d *node;
+            do{
+                ret = server.getdata(buf,4096);
+                if (ret > 0) {
+                    node = revdata.CreateNode();
+                    memcpy(node->buf,buf,node->size);
+                    revdata.Insert(node);
+                } else break;
+            }
+            while( true );
+            int retryTime = RETRY_TIME;
+entry_of_speech:
+            speech_sdk.speek_voice (nullptr,0,voice_start);
+            while(true) {
+                node = nullptr;
+                ret = revdata.read ( &node ,read_list);
+                if(ret == SUCCESS ) {
+                    speech_sdk.speek_voice (node->buf,node->size,voice_data);
+                } else break;
+            }
+            speech_sdk.speek_voice(buf,ret,voice_end);
+            int count=5;
+            speech_handle_status shs;
+            while( count-- > 0 && (shs = speech_sdk.get_handle_status()) == handle_start ) sleep(1);
+            if( (shs == handle_start || shs == handle_err) && retryTime-- >0 ) {  // wait timeout or err occoured
+                speech_sdk.reinit();
+                goto entry_of_speech;
+            }
+            revdata.clean();
+
         }
-        while(true);
-        speech_sdk.speek_voice(buf,ret,voice_end);
 #endif
 
     };
