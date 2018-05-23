@@ -7,7 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#define PORT 9009
+#define PORT 9999
 #define LOCALIP "127.0.0.1"
 
 class netserver
