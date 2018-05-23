@@ -23,7 +23,7 @@ public:
 private:
     callback_out_func outputfunc;
     callback_input_func inputfunc;
-    struct mad_decoder decoder;
+    struct mad_decoder *decoder;
     void release();
 
 };

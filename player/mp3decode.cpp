@@ -3,12 +3,12 @@
 
 mp3decode::mp3decode()
 {
-
+    decoder = new mad_decoder;
 }
 
 mp3decode::~mp3decode()
 {
-
+    delete decoder;
 }
 
 /*
@@ -27,13 +27,13 @@ r_status mp3decode::decode(void *data)
 
     /* configure input, output, and error functions */
 
-    mad_decoder_init( &decoder, data , inputfunc , 0 /* header */, 0 /* filter */,
+    mad_decoder_init( decoder, data , inputfunc , 0 /* header */, 0 /* filter */,
                      outputfunc, 0, 0 /* message */);
 
     /* start decoding */
-    result = mad_decoder_run (&decoder, MAD_DECODER_MODE_SYNC);
+    result = mad_decoder_run ( decoder, MAD_DECODER_MODE_SYNC);
 
-    mad_decoder_finish(&decoder);
+    mad_decoder_finish( decoder );
     return result;
 }
 void mp3decode::release()
