@@ -30,7 +30,8 @@ r_status Player::start()
         data_d.audio_addr = &audio;
         data_d.list_addr = &list;
         audio.init(44100,2,16);
-        mp3.registe_callback(input,output);
+        mp3 = new mp3decode;
+        mp3->registe_callback(input,output);
         data_d.playflag = start_play;
         thread.start( *this );
        flag = !flag;
@@ -46,7 +47,7 @@ r_status Player::stop()
         thread.join();
         audio.stop();
         list.clean();
-
+        delete mp3;
        flag =!flag;
     }
     return SUCCESS;
@@ -69,6 +70,7 @@ r_status Player::resume()
         data_d.playflag = resume_play;
     }
 }
+
 r_status Player::fillaudiodata(char *buf,int size)
 {
     listnode_d * node = list.CreateNode();
@@ -82,12 +84,12 @@ void Player::run()
 {
     DEBUG("play thread run\n");
 
-    int ret = mp3.decode( (void *)&data_d);
+    int ret = mp3->decode( (void *)&data_d);
     LOGOUT("decode ret:%d",ret);
 
     //DEBUG("play thread stop ,ret:%d\n",ret);
     int count = PLAYWAITINGTIME;
-    while (data_d.playflag == start_play && count >0 ){
+    while (data_d.playflag == start_play && count >0 ) {
         sleep(1);
         count--;
     }
