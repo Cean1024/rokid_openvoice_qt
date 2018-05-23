@@ -11,8 +11,8 @@
 
 
 void Handle_speech_result(speech::SpeechResult &Result,void *data);
-void Handle_tts_result(speech::TtsResult &Result,void *data);
-void handlhttpdl(char *buf,void *param);
+void Handle_tts_result(speech::TtsResult &Result, void *data, void *data2);
+r_status handlhttpdl(char *buf,void *param);
 void action_play(JSON::Object::Ptr &item,void *data);
 void action_stop(JSON::Object::Ptr &item,void *data);
 void action_voice(JSON::Object::Ptr &item,void *data);
