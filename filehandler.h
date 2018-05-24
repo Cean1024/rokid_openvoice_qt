@@ -4,8 +4,8 @@
 #include <fstream>
 #include <cstdio>
 #include "common.h"
-#include "tts.h"
-#include "speech.h"
+#include <speech/tts.h>
+#include <speech/speech.h>
 
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/ParseHandler.h"

@@ -1,4 +1,4 @@
-#include "include/mad.h"
+#include <mad.h>
 #include "mp3decode.h"
 #include "alsahandle.h"
 #include "player.h"

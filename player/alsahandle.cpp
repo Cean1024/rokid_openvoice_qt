@@ -84,7 +84,7 @@ r_status AlsaHandle::audioinit ()
     }
 
     if (( err = snd_pcm_open (&pcm_param.playback_handle, \
-                              "default", pcm_param.streamRDWR,\
+                              "hw:0", pcm_param.streamRDWR,\
                               pcm_param.mode) ) < 0) {
         fprintf(stderr, "cannot open audio device %s (%s)\n", "hw:0", snd_strerror(err));
         pcm_param.playback_handle = NULL;
@@ -203,6 +203,7 @@ r_status AlsaHandle::audioinit ()
 r_status AlsaHandle::writei(char *buf ,int frames)
 {
     int err;
+    if(pcm_param.playback_handle == NULL) return FAILED;
     err = snd_pcm_writei ( pcm_param.playback_handle , buf, frames);
     if ( err == -EPIPE) {
 

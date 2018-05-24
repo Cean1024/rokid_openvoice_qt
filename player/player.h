@@ -36,7 +36,9 @@ public:
     r_status resume();
 
     r_status fillaudiodata(char *buf,int size);
-
+    playstatus getPlayStatus() {
+        return data_d.playflag;
+    }
 
 
 protected:

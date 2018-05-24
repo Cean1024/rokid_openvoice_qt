@@ -1,6 +1,6 @@
 #ifndef MP3DECOD_H
 #define MP3DECOD_H
-#include "include/mad.h"
+#include <mad.h>
 #include "common.h"
 
 typedef enum mad_flow ( * callback_out_func )(void *data,struct mad_header const *header,struct mad_pcm *pcm);

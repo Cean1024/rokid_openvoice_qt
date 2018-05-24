@@ -2,7 +2,7 @@
 #define TTSSDK_H
 #include <iostream>
 #include <memory>
-#include "tts.h"
+#include <speech/tts.h>
 #include "Poco/Thread.h"
 #include "Poco/Runnable.h"
 #include "common.h"

@@ -115,7 +115,7 @@ void Handle_tts_result(speech::TtsResult &Result, void *data,void *data2)
     case speech::TTS_RES_CANCELLED:
     case speech::TTS_RES_END: {
 
-        pcmplayer->finish();
+        pcmplayer->waitfinish();
         player->resume();
 
         printf("Handler ------tts------> voice end 4\n");
@@ -149,11 +149,11 @@ void openvoicerunnable(void *data)
     speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
     tts_sdk.init(popts ,Handle_tts_result,(void *)&ttshandledata);
     //std::string input;
-    netserver server("192.168.199.245",9999);
+    netserver server("192.168.199.122",9999);
     char buf[4096];
     int ret;
-    int count=0;
-    createWavHead  head_c;
+    //int count=0;
+
     while(1) {
 #if 0
         //int fd=open("/home/samba/来首音乐.wav",O_RDONLY);
@@ -183,6 +183,7 @@ void openvoicerunnable(void *data)
 
         memset(buf,0,4096);
         {
+            createWavHead  head_c;
             std::string filename = "/home/samba/audio_";
             int sum=0;
             filename += std::to_string(count++);
@@ -205,18 +206,33 @@ void openvoicerunnable(void *data)
 #if 1
         server.listenandaccept();
         {
+            int playerflag=0;
+            int pcmflag=0;
+            playstatus p_sta = player.getPlayStatus();
+            Pcmplayer_status pcm_sta = pcmplayer.returnstatus();
+            if(p_sta == start_play || p_sta == resume_play){
+                player.pause();
+                playerflag =1;
+            }
+            if(pcm_sta == Pcmplayer_start || pcm_sta == Pcmplayer_resume ) {
+                pcmplayer.pause();
+                pcmflag =1;
+            }
+
             LinkList revdata(REV_AFRAMEBUFSIZE);
             listnode_d *node;
             do{
                 ret = server.getdata(buf,4096);
                 if (ret > 0) {
                     node = revdata.CreateNode();
-                    memcpy(node->buf,buf,node->size);
+                    memcpy(node->buf,buf,ret);
+                    node->size = ret;
                     revdata.Insert(node);
                 } else break;
             }
             while( true );
-            int retryTime = RETRY_TIME;
+            player.resume();
+            int retryTime = 0;
 entry_of_speech:
             speech_sdk.speek_voice (nullptr,0,voice_start);
             while(true) {
@@ -235,6 +251,8 @@ entry_of_speech:
                 goto entry_of_speech;
             }
             revdata.clean();
+            if(playerflag)player.resume();
+            if(pcmflag)pcmplayer.resume();
 
         }
 #endif

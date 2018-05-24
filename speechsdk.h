@@ -2,7 +2,7 @@
 #define SPEECHSDK_H
 #include <iostream>
 #include <memory>
-#include "speech.h"
+#include <speech/speech.h>
 
 
 #include "Poco/Thread.h"
@@ -50,7 +50,7 @@ protected:
 private:
     Poco::Thread thread;
 
-    std::shared_ptr<speech::Speech> speech = speech::Speech::new_instance();
+    std::shared_ptr<speech::Speech> speech ;
     rokid::speech::PrepareOptions popts;
     callback_speech_func handleresult;
     void * data;

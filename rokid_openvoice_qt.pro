@@ -3,9 +3,10 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_RPATHDIR += $$PWD/lib/openvoice
-LIBS +=  -L$$PWD/lib/ -lmad -lspeech -lPocoFoundation -lasound -lPocoNet -lPocoJSON
-INCLUDEPATH += $$PWD/include/openvoice
+#QMAKE_RPATHDIR += $$PWD/lib/openvoice
+LIBS +=   -lmad -lspeech -lPocoFoundation -lasound -lPocoNet -lPocoJSON
+#INCLUDEPATH += $$PWD/include/openvoice
+INCLUDEPATH += $$PWD/include
 QMAKE_CXXFLAGS +=  -std=c++11
 SOURCES += main.cpp \
     filehandler.cpp \

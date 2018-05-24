@@ -10,8 +10,9 @@
 enum Pcmplayer_status{
     Pcmplayer_start=0,
     Pcmplayer_finish,
-    Pcmplayer_begain,
-    Pcmplayer_stop
+    Pcmplayer_resume,
+    Pcmplayer_pause,
+    Pcmplayer_waitfinish
 };
 
 
@@ -23,6 +24,9 @@ public:
     r_status fillaudiodata(char *buf,int size);
     r_status start();
     r_status finish();
+    r_status waitfinish();
+    r_status resume();
+    r_status pause();
     Pcmplayer_status returnstatus();
 
 
@@ -35,6 +39,7 @@ private:
     AlsaHandle audio;
 
     Pcmplayer_status playflag;
+    Pcmplayer_status resume_pause_storage;
 };
 
 #endif // PCMPLAYER_H

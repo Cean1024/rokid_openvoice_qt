@@ -3,7 +3,7 @@
 Pcmplayer::Pcmplayer()
 {
     list = new LinkList(PCMPLAYERFRAMSIZE);
-    playflag = Pcmplayer_stop;
+    playflag = Pcmplayer_finish;
 }
 
 Pcmplayer::~Pcmplayer()
@@ -12,7 +12,7 @@ Pcmplayer::~Pcmplayer()
 }
 r_status Pcmplayer::start()
 {
-    if(playflag == Pcmplayer_stop) {
+    if(playflag == Pcmplayer_finish) {
         audio.init(12000,2,16);
         if(!thread.isRunning())thread.join();
         thread.start(*this);
@@ -22,9 +22,35 @@ r_status Pcmplayer::start()
 
 r_status Pcmplayer::finish()
 {
-    if(playflag == Pcmplayer_start) {
+    if(playflag == Pcmplayer_start  ) {
         playflag = Pcmplayer_finish;
-        while ( playflag != Pcmplayer_stop ) usleep(10000);
+        thread.join();
+        audio.stop();
+    }
+}
+r_status Pcmplayer::waitfinish()
+{
+    if(playflag == Pcmplayer_start ) {
+        playflag = Pcmplayer_waitfinish;
+        thread.join();
+        audio.stop();
+    }
+}
+
+
+r_status Pcmplayer::resume()
+{
+    if( playflag == Pcmplayer_pause) {
+        audio.init(12000,2,16);
+        playflag = resume_pause_storage;
+    }
+}
+
+r_status Pcmplayer::pause()
+{
+    if( playflag !=  Pcmplayer_pause && playflag != Pcmplayer_finish ) {
+        resume_pause_storage = playflag;
+        playflag = Pcmplayer_pause;
         audio.stop();
     }
 }
@@ -67,17 +93,40 @@ void Pcmplayer::run()
 
     DEBUG("in Pcmplayer %s\n",__func__);
 
-
     while(1) {
 
-        ret = list->get(&node);
-        if(ret == SUCCESS ) audio.writei(node->buf,node->size/4);
-        else if( playflag == Pcmplayer_start) usleep(10000);
-        else if( playflag == Pcmplayer_finish) break;
-    }
-    sleep(1);
-    playflag = Pcmplayer_stop;
+        if( playflag == Pcmplayer_finish) break;
+        switch(playflag) {
+        case Pcmplayer_start:{
+            ret = list->get(&node);
+            if(ret == SUCCESS ){
+                audio.writei(node->buf,node->size/4);
+                list->Release(node);
+            }
+            else usleep(10000);
 
+        };break;
+        case Pcmplayer_pause:{
+            usleep(10000);
+        };break;
+
+        case Pcmplayer_waitfinish: {
+            while(1) {
+
+                if( playflag == Pcmplayer_pause ) {usleep(10000);continue;}
+                ret = list->get(&node);
+                if(ret == SUCCESS ) {
+                    audio.writei(node->buf,node->size/4);
+                    list->Release(node);
+                }
+                else { playflag = Pcmplayer_finish;break;}
+
+            }
+        };break;
+        }
+    }
+    list->clean();
+    sleep(1);
     DEBUG("out Pcmplayer %s\n",__func__);
 
 }

@@ -55,7 +55,7 @@ enum returnstatus {
 /*device info*/
 #define DEVICENAME "keantestaudio"
 #define CONFIGFILEPATH \
-    "/home/samba/work/rokid_openvoice_sdk/rokid_openvoice_qt/rokid_openvoice_qt/"
+    "/etc/openvoice/"
 #define CONFIGFILENAME "openvoiceconfig.json"
 
 

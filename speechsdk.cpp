@@ -5,6 +5,8 @@ SpeechSdk::SpeechSdk()
     handleresult=NULL;
     voice_id =-1;
     sh_status = handle_end;
+    speech = nullptr;
+
 }
 
 SpeechSdk::~SpeechSdk()
@@ -47,13 +49,17 @@ int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
 
 int SpeechSdk::speech_init(speech::PrepareOptions &popts)
 {
-
+    if(speech) speech->release();
+    sleep(1);
+    speech = speech::Speech::new_instance();
     std::shared_ptr<speech::SpeechOptions> opts = speech::SpeechOptions::new_instance();
     opts->set_codec(speech::Codec::PCM);
     opts->set_lang(speech::Lang::ZH);
     opts->set_vad_mode(speech::VadMode::LOCAL);
-    speech->config(opts);
+    opts->set_no_intermediate_asr(true);
+
     speech->prepare(popts);
+    speech->config(opts);
     //speech->put_text("若琪，来首音乐");
 
 }
@@ -81,10 +87,15 @@ void SpeechSdk::speech_run()
         if(result.type == speech::SPEECH_RES_END ) sh_status = handle_end;
         else if( result.type == speech::SPEECH_RES_ERROR ) sh_status = handle_err;
     }
+    LOGOUT("speech->poll failed");
+
 }
 
 void SpeechSdk::run()
 {
-    speech_run();
+    while(1) {
+        speech_run();
+        usleep(100000);
+    }
 }
 
