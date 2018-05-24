@@ -4,4 +4,5 @@ rokid_openvoice_qt
 /test/
 Makefile
 openvoiceconfig.json
+.qmake.stash
 
