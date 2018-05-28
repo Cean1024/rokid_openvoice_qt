@@ -2,6 +2,7 @@
 #define LINKLIST_H
 #include "Poco/MemoryPool.h"
 #include "common.h"
+#include "exception"
 
 
 enum rl_status {

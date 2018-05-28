@@ -6,7 +6,6 @@ SpeechSdk::SpeechSdk()
     voice_id =-1;
     sh_status = handle_end;
     speech = nullptr;
-
 }
 
 SpeechSdk::~SpeechSdk()
@@ -21,9 +20,9 @@ int SpeechSdk::speek(std::string strings)
 }
 int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
 {
-    switch(flag){
+    switch(flag) {
     case voice_data:speech->put_voice(voice_id,(uint8_t *)buf,len);break;
-    case voice_end:{
+    case voice_end: {
         speech->end_voice(voice_id);
         voice_id =-1;
 
@@ -47,7 +46,7 @@ int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
 }
 
 
-int SpeechSdk::speech_init(speech::PrepareOptions &popts)
+int SpeechSdk::speech_init()
 {
     if(speech) speech->release();
     sleep(1);
@@ -68,7 +67,7 @@ int SpeechSdk::init (rokid::speech::PrepareOptions &popts, callback_speech_func 
     handleresult = func;
     this->data = data;
     this->popts = popts;
-    speech_init(popts);
+    speech_init();
 
     thread.start(*this);
     //thread.join();//等待该线程技术
@@ -79,23 +78,22 @@ void SpeechSdk::speech_run()
 {
     speech::SpeechResult result;
     while (true) {
-        if (!speech->poll(result))
-            break;
+        if (!speech->poll(result)) {
+            speech_init();
+            LOGOUT("speech->poll failed, reinit speech");
+        }
         // 处理result
         if(result.type == speech::SPEECH_RES_END ) sh_status = handle_processing;
         handleresult(result,data);
         if(result.type == speech::SPEECH_RES_END ) sh_status = handle_end;
         else if( result.type == speech::SPEECH_RES_ERROR ) sh_status = handle_err;
     }
-    LOGOUT("speech->poll failed");
+
 
 }
 
 void SpeechSdk::run()
 {
-    while(1) {
-        speech_run();
-        usleep(100000);
-    }
+    speech_run();
 }
 

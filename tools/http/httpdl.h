@@ -11,6 +11,10 @@
 
 typedef r_status (*httpdlcb)(char *dldata,void *outdata);
 
+enum httpdl_status{
+    dl_start,
+    dl_stop
+};
 
 class Httpdl:public Poco::Runnable
 {
@@ -31,7 +35,7 @@ private:
     httpdlcb handledl;
     std::string url;
     Poco::Thread thr;
-    bool flag;
+    httpdl_status dl_sta;
 
 };
 

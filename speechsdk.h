@@ -32,7 +32,7 @@ public:
     SpeechSdk();
     ~SpeechSdk();
     void reinit() {
-        speech_init(popts);
+        speech_init();
     }
     int init(rokid::speech::PrepareOptions &popts, callback_speech_func func, void *data);
     int speek(std::string strings);
@@ -45,7 +45,7 @@ public:
 protected:
     virtual void run();
     void speech_run();
-    int speech_init(speech::PrepareOptions &popts);
+    int speech_init();
 
 private:
     Poco::Thread thread;

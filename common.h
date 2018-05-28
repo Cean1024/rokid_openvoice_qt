@@ -41,7 +41,8 @@ enum returnstatus {
 };
 
 #define DEBUG(format,args...) printf(format,##args)
-#define LOGOUT(format,args...) printf("%s %s " format "\n",S_NAME,__func__,##args)
+#define LOGOUT(format,args...) printf("%s [%s]==> " format "\n",S_NAME,__func__,##args)
+#define LOGPROCESS(format,args...) printf("%s [%s]==> " format "\r",S_NAME,__func__,##args)
 
 
 

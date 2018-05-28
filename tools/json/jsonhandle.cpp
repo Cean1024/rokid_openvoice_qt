@@ -56,17 +56,17 @@ r_status JsonHandle::handleaction(JSON::Object::Ptr &arrydata)
         tmp =arrydata->get("type");
         tmpp = tmp.toString();
         if( tmpp == "voice") {
-            DEBUG("voice handler action\n");
+            LOGOUT("voice handler action");
             if(voice_func) voice_func(item,voicedata);
 
         }else if(tmpp == "media") {
-            DEBUG("media handler action\n");
+            LOGOUT("media handler action");
             if(media_func) media_func(item,mediadata);
 
         }
 
     } else if ( tmpp == "STOP" ) {
-        DEBUG("STOP handler action\n");
+        LOGOUT("STOP handler action");
         if(stop_func) stop_func(item,stopdata);
 
     }

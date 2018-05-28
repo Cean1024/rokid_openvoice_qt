@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 #QMAKE_RPATHDIR += $$PWD/lib/openvoice
-LIBS +=   -lmad -lspeech -lPocoFoundation -lasound -lPocoNet -lPocoJSON
+LIBS +=   -lmad -lspeech -lPocoFoundation -lasound -lPocoNet -lPocoJSON -lpthread
 #INCLUDEPATH += $$PWD/include/openvoice
 INCLUDEPATH += $$PWD/include
 QMAKE_CXXFLAGS +=  -std=c++11

@@ -2,7 +2,7 @@
 
 Httpdl::Httpdl()
 {
-    flag =true;
+    dl_sta = dl_stop;
 }
 
 Httpdl::~Httpdl()
@@ -12,20 +12,26 @@ Httpdl::~Httpdl()
 void Httpdl::start()
 {
 
-   if(flag) {
-        DEBUG("in Httpdl %s\n",__func__);
+   if(dl_sta == dl_stop) {
+        LOGOUT("in Httpdl::start");
         thr.start(*this);
-        flag = !flag;
+        dl_sta = dl_start;
    }
 }
 void Httpdl::stop()
 {
 
-    if( !flag ) {
-        DEBUG("in Httpdl %s\n",__func__);
-        while(thr.isRunning())usleep(100000);
-        thr.join();
-        flag = !flag;
+    if( dl_sta == dl_start ) {
+        LOGOUT("in Httpdl::stop");
+        if(thr.isRunning());
+        {
+            pthread_t t_id = thr.tid();
+            pthread_cancel(t_id);
+            //thr.join();
+        }
+
+
+        dl_sta = dl_stop;
     }
 }
 
@@ -39,7 +45,7 @@ r_status Httpdl::RegistCb(httpdlcb func_cb,void *outdata)
 
 r_status Httpdl::HttpGetFile(std::string &url,std::string &mime)
 {
-    DEBUG("in Httpdl %s\n",__func__);
+    LOGOUT("in");
     Poco::URI objUri;
     Poco::Net::HTTPClientSession objHttpCliSess;
     Poco::Net::HTTPRequest objHttpReq;
@@ -70,7 +76,7 @@ r_status Httpdl::HttpGetFile(std::string &url,std::string &mime)
         objHttpResIs.read(buf,(ss-size > MEMPOOLBUFSIZE ) ? MEMPOOLBUFSIZE:(ss-size));
         if(this->handledl(buf,outdata) != SUCCESS)LOGOUT(" handledl err!!");
         size += MEMPOOLBUFSIZE;
-        printf("dl proccess :%f%%\r",size*100.0 /ss);
+        LOGPROCESS("dl proccess :%f%%",size*100.0 /ss);
     }
 }
 
@@ -111,7 +117,7 @@ r_status Httpdl::HttpGetFile(const std::string& uri, const std::string& fileName
         objHttpResIs.read(buf,(ss-size >1024 )? 1024:(ss-size));
         objFileOs.write(buf,(ss-size >1024 )? 1024:(ss-size));
         size +=1024;
-        printf("dl proccess :%f%%\r",size*100.0 /ss);
+        LOGPROCESS("dl proccess :%f%%",size*100.0 /ss);
     }
 
     return size;
@@ -126,7 +132,9 @@ r_status Httpdl::setUrl(std::string &url)
 void Httpdl::run()
 {
     std::string mime;
+    LOGOUT("start downloading");
     siglelist::getInstance()->sethttpdlstatus(httpdl_start);
     HttpGetFile(url,mime);
     siglelist::getInstance()->sethttpdlstatus(httpdl_finish);
+    LOGOUT("\ndownloading finish mime:%s",mime.c_str());
 }

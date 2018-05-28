@@ -35,7 +35,13 @@ listnode_d * LinkList::CreateNode()
     listnode_d *  node = nullptr;
     node = new listnode_d;
     if(node) {
-        node->buf = reinterpret_cast <char*>(pool->get());
+        try{
+        node->buf = reinterpret_cast <char *>(pool->get());
+        }catch (std::exception &e) {
+            LOGOUT("pool->get:%s",e.what());
+            delete node;
+            return nullptr;
+        }
         node->size = pool->blockSize();
         node->next=nullptr;
     }

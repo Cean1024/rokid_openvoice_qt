@@ -11,6 +11,7 @@ typedef void (*callback_tts_func)(rokid::speech::TtsResult &Result,void *data,vo
 enum vh_status{
     vh_start,
     vh_finish,
+    vh_processing,
     vh_err
 };
 
@@ -21,7 +22,7 @@ public:
     TtsSdk();
     ~TtsSdk();
     int init(speech::PrepareOptions &popts ,callback_tts_func func,void *data);
-    int speek(std::__cxx11::string strings);
+    vh_status speek(std::string strings);
     void set_vh_status(vh_status vhs)
     {
         voicehandle=vhs;
@@ -34,7 +35,7 @@ protected:
     virtual void run();
     void reinit();
 private:
-    std::shared_ptr<speech::Tts> tts = speech::Tts::new_instance();
+    std::shared_ptr<speech::Tts> tts;
     speech::PrepareOptions popts;
     callback_tts_func handleresult;
     Poco::Thread ptr;

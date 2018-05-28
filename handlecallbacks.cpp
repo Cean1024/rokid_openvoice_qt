@@ -44,8 +44,9 @@ void action_voice(JSON::Object::Ptr &item,void *data)
     Dynamic::Var tmp = item->get("tts");
     std::string tts = tmp.toString();
 
-    LOGOUT("tts:%s",tts.c_str());
-    tts_sdk->speek(tts);
+
+    vh_status vhs = tts_sdk->speek(tts);
+    LOGOUT("tts:%s vhs:%d",tts.c_str() ,vhs);
 
 }
 
@@ -55,29 +56,28 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
 
     switch (Result.type) {
     case speech::SPEECH_RES_ERROR: {
-        printf("Handler ------speech------> err:%d\n",Result.err);
+        LOGOUT("Handler speech--> err:%d",Result.err);
     };break;
     case speech::SPEECH_RES_INTER: {
-        printf("Handler ------speech------> SPEECH_RES_INTER\n");
-        std::cout<<"[SPEECH_RES_INTER]"<<std::endl;
-        std::cout<<"nlp:"<<Result.nlp<<std::endl;
-        std::cout<<"asr:"<<Result.asr<<std::endl;
-        std::cout<<"action:"<<Result.action<<std::endl;
-        std::cout<<"extra:"<<Result.extra<<std::endl;
+        LOGOUT("Handler speech-->  SPEECH_RES_INTER");
 
     };break;
     case speech::SPEECH_RES_START: {
-        printf("Handler ------speech------> SPEECH_RES_START\n");
+        LOGOUT("Handler speech-->  SPEECH_RES_START");
 
     };break;
     case speech::SPEECH_RES_CANCELLED:
     case speech::SPEECH_RES_END: {
-        printf("Handler ------speech------> SPEECH_RES_END\n");
+        LOGOUT("Handler speech-->  SPEECH_RES_END");
+        LOGOUT("action:%s",Result.action.c_str());
+        LOGOUT("nlp:%s",Result.nlp.c_str());
         handl->handle(Result.action);
     };break;
 
     case speech::SPEECH_RES_ASR_FINISH: {
-        std::cout<<"action:"<<Result.action<<std::endl;
+        LOGOUT("Handler speech-->  SPEECH_RES_ASR_FINISH");
+        LOGOUT("ASR:%s",Result.asr.c_str());
+        LOGOUT("nlp:%s",Result.nlp.c_str());
     };break;
     }
 }
@@ -87,38 +87,40 @@ void Handle_tts_result(speech::TtsResult &Result, void *data,void *data2)
     struct noded *pdata = (struct noded *)data;
     Player * player = (Player *)pdata->data1;
     Pcmplayer * pcmplayer = (Pcmplayer *)pdata->data2;
-
+    TtsSdk *ttssdk = (TtsSdk *)data2;
     switch (Result.type) {
     case speech::TTS_RES_ERROR: {
-        printf("Handler ------tts------> err:%d\n",Result.err);
+        LOGOUT("Handler tts--> err:%d",Result.err);
         pcmplayer->finish();
         player->resume();
+        ttssdk->set_vh_status(vh_err);
 
     };break;
     case speech::TTS_RES_VOICE: {
 
+
         pcmplayer->fillaudiodata(\
                     (char *)Result.voice->c_str(),\
                     Result.voice->size());
-        printf("Handler ------tts------> get voice  size:%d\n",Result.voice->size());
+        //LOGOUT("Handler tts--> get voice  size:%d",Result.voice->size());
 
     };break;
     case speech::TTS_RES_START: {
-
+        ttssdk->set_vh_status(vh_processing);
         player->pause();
         char buf[PCMPLAYERFRAMSIZE];
         memset(buf,0,PCMPLAYERFRAMSIZE);
         pcmplayer->start();
         pcmplayer->fillaudiodata(buf,PCMPLAYERFRAMSIZE);
-        printf("Handler ------tts------> voice start \n");
+        LOGOUT("Handler tts--> voice start");
     };break;
     case speech::TTS_RES_CANCELLED:
     case speech::TTS_RES_END: {
 
         pcmplayer->waitfinish();
         player->resume();
-
-        printf("Handler ------tts------> voice end 4\n");
+        ttssdk->set_vh_status(vh_finish);
+        LOGOUT("Handler tts--> voice end");
     };break;
     }
 }
@@ -153,6 +155,8 @@ void openvoicerunnable(void *data)
     char buf[4096];
     int ret;
     //int count=0;
+
+    //LinkList revdata(REV_AFRAMEBUFSIZE);
 
     while(1) {
 #if 0
@@ -219,7 +223,17 @@ void openvoicerunnable(void *data)
                 pcmflag =1;
             }
 
-            LinkList revdata(REV_AFRAMEBUFSIZE);
+            speech_sdk.speek_voice (nullptr,0,voice_start);
+            do{
+                ret = server.getdata(buf,4096);
+                if (ret > 0) {
+                speech_sdk.speek_voice (buf,ret,voice_data);
+                } else break;
+            }
+            while( true );
+            speech_sdk.speek_voice(buf,ret,voice_end);
+#if 0
+
             listnode_d *node;
             do{
                 ret = server.getdata(buf,4096);
@@ -243,14 +257,16 @@ entry_of_speech:
                 } else break;
             }
             speech_sdk.speek_voice(buf,ret,voice_end);
-            int count=5;
+            int count=3;
             speech_handle_status shs;
             while( count-- > 0 && (shs = speech_sdk.get_handle_status()) == handle_start ) sleep(1);
             if( (shs == handle_start || shs == handle_err) && retryTime-- >0 ) {  // wait timeout or err occoured
-                speech_sdk.reinit();
+                speech_sdk.speek_voice(nullptr,0,voice_cancal);
+                //speech_sdk.reinit();
                 goto entry_of_speech;
             }
             revdata.clean();
+#endif
             if(playerflag)player.resume();
             if(pcmflag)pcmplayer.resume();
 

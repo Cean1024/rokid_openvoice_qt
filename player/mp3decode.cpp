@@ -20,7 +20,7 @@ mp3decode::~mp3decode()
  * signal an error).
  */
 
-r_status mp3decode::decode(void *data)
+r_status mp3decode::decode()
 {
 
     int result;
@@ -42,12 +42,14 @@ void mp3decode::release()
 
 }
 
-r_status mp3decode::registe_callback(callback_input_func inputf,callback_out_func outputf)
+r_status mp3decode::registe_callback(callback_input_func inputf,\
+                                     callback_out_func outputf,void *data)
 {
     if( !outputfunc || ! inputfunc )
         return ERROR;
     this->outputfunc = outputf;
     this->inputfunc = inputf;
+    this->data = data;
     return SUCCESS;
 }
 

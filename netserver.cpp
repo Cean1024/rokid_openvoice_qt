@@ -49,7 +49,7 @@ r_status netserver::listenandaccept()
 {
     if(welcomeSocket<0){return FAILED;}
     /*---- Listen on the socket, with 5 max connection requests queued ----*/
-    if(listen(welcomeSocket,5) ==0 ) printf("Listening\n");
+    if(listen(welcomeSocket,5) ==0 ) LOGOUT("Listening\n");
     else{ printf("Error\n"); return FAILED;}
 
     /*---- Accept call creates a new socket for the incoming connection ----*/
@@ -65,7 +65,7 @@ r_status netserver::listenandaccept(sockaddr_storage &client)
 {
     if(welcomeSocket<0) {return FAILED;}
     /*---- Listen on the socket, with 5 max connection requests queued ----*/
-    if(listen(welcomeSocket,5) ==0 ) printf("Listening\n");
+    if(listen(welcomeSocket,5) ==0 ) LOGOUT("Listening");
     else{ printf("Error\n"); return FAILED;}
 
     /*---- Accept call creates a new socket for the incoming connection ----*/

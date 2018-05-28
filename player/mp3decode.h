@@ -16,8 +16,8 @@ class mp3decode
 public:
     mp3decode();
     ~mp3decode();
-    r_status registe_callback(callback_input_func inputf,callback_out_func outputf);
-    r_status decode(void *data);
+    r_status registe_callback(callback_input_func inputf, callback_out_func outputf, void *data);
+    r_status decode();
 
 
 private:
@@ -25,6 +25,7 @@ private:
     callback_input_func inputfunc;
     struct mad_decoder *decoder;
     void release();
+    void *data;
 
 };
 
