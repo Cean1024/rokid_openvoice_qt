@@ -56,6 +56,7 @@ private:
     void * data;
     int voice_id;
     speech_handle_status sh_status;
+    speech::VoiceOptions *voiceOptions;
     //
 };
 

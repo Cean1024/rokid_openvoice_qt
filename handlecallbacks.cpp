@@ -40,13 +40,21 @@ void action_stop(JSON::Object::Ptr &item,void *data)
 }
 void action_voice(JSON::Object::Ptr &item,void *data)
 {
+
     TtsSdk *tts_sdk = (TtsSdk *)data;
     Dynamic::Var tmp = item->get("tts");
     std::string tts = tmp.toString();
+    int index =tts.find("若琪",0);
+    if( index !=std::string::npos) tts.replace(tts.find("若琪",0),6,"小桑");
 
+    LOGOUT("tts:%s",tts.c_str());
 
-    vh_status vhs = tts_sdk->speek(tts);
-    LOGOUT("tts:%s vhs:%d",tts.c_str() ,vhs);
+    tts_sdk->set_vh_status(vh_start);
+    //vh_status vhs = tts_sdk->speek(tts);
+    tts_sdk->speek(tts);
+    while ( tts_sdk->get_vh_status() != vh_finish ) usleep(10000);
+    tts_sdk->start_speak();
+    tts_sdk->stop_speak();
 
 }
 
@@ -84,43 +92,44 @@ void Handle_speech_result(speech::SpeechResult &Result, void *data)
 
 void Handle_tts_result(speech::TtsResult &Result, void *data,void *data2)
 {
-    struct noded *pdata = (struct noded *)data;
-    Player * player = (Player *)pdata->data1;
-    Pcmplayer * pcmplayer = (Pcmplayer *)pdata->data2;
+    //struct noded *pdata = (struct noded *)data;
+    //Player * player = (Player *)pdata->data1;
+    //Pcmplayer * pcmplayer = (Pcmplayer *)pdata->data2;
     TtsSdk *ttssdk = (TtsSdk *)data2;
     switch (Result.type) {
     case speech::TTS_RES_ERROR: {
         LOGOUT("Handler tts--> err:%d",Result.err);
-        pcmplayer->finish();
-        player->resume();
+        //pcmplayer->stop();
+        //player->resume();
         ttssdk->set_vh_status(vh_err);
 
     };break;
     case speech::TTS_RES_VOICE: {
 
 
-        pcmplayer->fillaudiodata(\
+        ttssdk->filldata(\
                     (char *)Result.voice->c_str(),\
                     Result.voice->size());
         //LOGOUT("Handler tts--> get voice  size:%d",Result.voice->size());
 
     };break;
     case speech::TTS_RES_START: {
-        ttssdk->set_vh_status(vh_processing);
-        player->pause();
-        char buf[PCMPLAYERFRAMSIZE];
-        memset(buf,0,PCMPLAYERFRAMSIZE);
-        pcmplayer->start();
-        pcmplayer->fillaudiodata(buf,PCMPLAYERFRAMSIZE);
         LOGOUT("Handler tts--> voice start");
+        ttssdk->set_vh_status(vh_processing);
+        //player->pause();
+        //char buf[PCMPLAYERFRAMSIZE];
+        //memset(buf,0,PCMPLAYERFRAMSIZE);
+        //pcmplayer->start();
+        //ttssdk->filldata(buf,PCMPLAYERFRAMSIZE);
+
     };break;
     case speech::TTS_RES_CANCELLED:
     case speech::TTS_RES_END: {
-
-        pcmplayer->waitfinish();
-        player->resume();
-        ttssdk->set_vh_status(vh_finish);
         LOGOUT("Handler tts--> voice end");
+        //pcmplayer->finish();
+        //player->resume();
+        ttssdk->set_vh_status(vh_finish);
+
     };break;
     }
 }
@@ -148,8 +157,14 @@ void openvoicerunnable(void *data)
     Jhandl.cb_registe(action_stop,(void *)&Jsonhandlerdata,action_type_stop);
     Jhandl.cb_registe(action_voice,(void *)&tts_sdk,action_type_voice);
 
+    Jhandl.start();
+
+    tts_sdk.addplayer(player);
+    tts_sdk.addplayer(pcmplayer);
+
     speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
-    tts_sdk.init(popts ,Handle_tts_result,(void *)&ttshandledata);
+    tts_sdk.init(popts ,Handle_tts_result,(void *)&tts_sdk);
+
     //std::string input;
     netserver server("192.168.199.122",9999);
     char buf[4096];

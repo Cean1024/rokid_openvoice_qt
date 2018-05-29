@@ -9,6 +9,8 @@
 #include "Poco/Dynamic/Var.h"
 #include "Poco/JSON/Query.h"
 #include "Poco/JSON/PrintHandler.h"
+#include "Poco/Runnable.h"
+#include "Poco/Thread.h"
 
 using namespace Poco;
 
@@ -21,7 +23,7 @@ enum action_type {
 };
 
 
-class JsonHandle
+class JsonHandle:public Poco::Runnable
 {
 public:
     JsonHandle();
@@ -29,6 +31,13 @@ public:
     r_status handle(std::string &data);
     r_status handleaction(JSON::Object::Ptr &arrydata);
     r_status cb_registe(cb_action func,void *data,action_type type);
+    void start()
+    {
+        thread.start(*this);
+    }
+protected:
+    void run();
+
 private:
     void *voicedata;
     void *mediadata;
@@ -36,6 +45,23 @@ private:
     cb_action voice_func;
     cb_action media_func;
     cb_action stop_func;
+
+    Poco::Thread thread;
+
+    std::string data;
+
+    JSON::Parser parse;
+    Dynamic::Var json;
+    JSON::Object::Ptr pObj;
+
+    JSON::Object::Ptr response;
+
+    JSON::Object::Ptr action;
+
+    JSON::Array::Ptr pArry;
+
+    JSON::Array::ConstIterator it;
+
 };
 
 #endif // JSONHANDLE_H

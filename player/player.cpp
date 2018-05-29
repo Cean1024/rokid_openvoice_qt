@@ -26,7 +26,7 @@ r_status Player::start()
 {
 
     if( data_d.playflag == stop_play  ) {
-        DEBUG("in Player %s\n",__func__);
+        LOGOUT("in Player \n");
         data_d.audio_addr = &audio;
         data_d.list_addr = &list;
         audio.init(44100,2,16);
@@ -42,7 +42,7 @@ r_status Player::stop()
 {
 
     if( data_d.playflag != stop_play ) {
-        DEBUG("in Player %s\n",__func__);
+        LOGOUT("in Player \n");
         data_d.playflag = stop_play;
         thread.join();
         audio.stop();
@@ -57,7 +57,7 @@ r_status Player::pause()
 {
     if( data_d.playflag == start_play \
             || data_d.playflag == resume_play ) {
-        DEBUG("in Player %s\n",__func__);
+        LOGOUT("in Player \n");
         data_d.playflag = pause_play;
         usleep(100000);
         audio.stop();
@@ -66,7 +66,7 @@ r_status Player::pause()
 r_status Player::resume()
 {
     if ( data_d.playflag == pause_play ) {
-        DEBUG("in Player %s\n",__func__);
+        LOGOUT("in Player \n");
         audio.init(44100,2,16);
         data_d.playflag = resume_play;
     }
@@ -83,7 +83,7 @@ r_status Player::fillaudiodata(char *buf,int size)
 
 void Player::run()
 {
-    DEBUG("play thread run\n");
+    LOGOUT("play thread run\n");
 
     int ret = mp3->decode();
     LOGOUT("decode ret:%d",ret);

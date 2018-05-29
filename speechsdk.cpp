@@ -22,25 +22,26 @@ int SpeechSdk::speek_voice(char *buf,int len,voice_status flag)
 {
     switch(flag) {
     case voice_data:speech->put_voice(voice_id,(uint8_t *)buf,len);break;
-    case voice_end: {
-        speech->end_voice(voice_id);
-        voice_id =-1;
 
-    };break;
     case voice_start: {
         if(voice_id > 0) {
             LOGOUT("voice_id is not empty, please end or cancal it first");
             speech->cancel(voice_id);
             //return FAILED;
         }
+        //voiceOptions = new speech::VoiceOptions;
+        //voice_id = speech->start_voice(voiceOptions);
         voice_id = speech->start_voice();
         sh_status = handle_start;
     };break;
     case voice_cancal:
         speech->cancel(voice_id);
+    case voice_end: {
+        speech->end_voice(voice_id);
         voice_id =-1;
-        break;
+        //delete voiceOptions;
 
+    };break;
     }
     return SUCCESS;
 }

@@ -9,6 +9,7 @@
 
 enum Pcmplayer_status{
     Pcmplayer_start=0,
+    Pcmplayer_stop,
     Pcmplayer_finish,
     Pcmplayer_resume,
     Pcmplayer_pause,
@@ -23,6 +24,7 @@ public:
     ~Pcmplayer();
     r_status fillaudiodata(char *buf,int size);
     r_status start();
+    r_status stop();
     r_status finish();
     r_status waitfinish();
     r_status resume();

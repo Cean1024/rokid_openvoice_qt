@@ -6,8 +6,11 @@
 #include "Poco/Thread.h"
 #include "Poco/Runnable.h"
 #include "common.h"
+#include "player/pcmplayer.h"
+#include "player/player.h"
+
 typedef void (*callback_tts_func)(rokid::speech::TtsResult &Result,void *data,void *data2);
-#define RETRY_TIME 5
+#define RETRY_TIME 10
 enum vh_status{
     vh_start,
     vh_finish,
@@ -23,6 +26,24 @@ public:
     ~TtsSdk();
     int init(speech::PrepareOptions &popts ,callback_tts_func func,void *data);
     vh_status speek(std::string strings);
+    void addplayer(Pcmplayer &player);
+    void addplayer(Player &player);
+
+    void  start_speak()
+    {
+        if(mp3player)mp3player->pause();
+        if(player)player->start();
+
+    }
+    void stop_speak()
+    {
+        if(player)player->waitfinish();
+        if(mp3player)mp3player->resume();
+    }
+    void filldata(char *buf,int size) {
+        if(player)player->fillaudiodata(buf,size);
+    }
+
     void set_vh_status(vh_status vhs)
     {
         voicehandle=vhs;
@@ -38,9 +59,13 @@ private:
     std::shared_ptr<speech::Tts> tts;
     speech::PrepareOptions popts;
     callback_tts_func handleresult;
+    Pcmplayer *player;
+    Player *mp3player;
+
     Poco::Thread ptr;
     void * data;
     vh_status voicehandle;
+    int tts_id;
 
 };
 

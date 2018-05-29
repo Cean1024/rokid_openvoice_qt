@@ -5,6 +5,9 @@ TtsSdk::TtsSdk()
     handleresult=NULL;
     voicehandle = vh_finish;
     tts = speech::Tts::new_instance();
+    tts_id =0;
+    player =nullptr;
+    mp3player =nullptr;;
 }
 
 TtsSdk::~TtsSdk()
@@ -13,35 +16,38 @@ TtsSdk::~TtsSdk()
 }
 vh_status TtsSdk::speek(std::string strings)
 {
-     int ret;
      vh_status vhs;
      int times =  RETRY_TIME;
 speek_start:
 
-     LOGOUT("in");
+     LOGOUT("start tts speak");
+     if(tts_id >0 ) {tts->cancel(tts_id); tts_id =0;sleep(1);}
      set_vh_status(vh_start);
-     ret = tts->speak(strings.c_str());
-     LOGOUT("in");
+     tts_id = tts->speak(strings.c_str());
+     LOGOUT("finish tts speak");
      while( true ) {
          vhs = get_vh_status();
 
          if( vhs == vh_finish) break;
          else if( vhs == vh_err  ) {
-             tts->cancel(ret);
+             tts->cancel(tts_id);
+             tts_id =0;
              reinit();
              goto speek_start;
-         } else if(vhs == vh_start) {
+         } else if(vhs == vh_start ) {
 
              if( times > 0)
                  times--;
              else {
-                 tts->cancel(ret);
+                 tts->cancel(tts_id);
+                 tts_id = 0;
+                 //reinit();
                  break;
              }
          }
          sleep(1);
      }
-     LOGOUT("OUT");
+     LOGOUT("OUT TtsSdk");
      return vhs;
 
 }
@@ -69,6 +75,17 @@ int TtsSdk::init( speech::PrepareOptions &popts, callback_tts_func func, void *d
     ptr.start(*this);
 }
 
+void TtsSdk::addplayer(Pcmplayer &player )
+{
+
+    this->player = &player;
+
+}
+void TtsSdk::addplayer(Player &player)
+{
+    this->mp3player = &player;
+
+}
 void TtsSdk::run()
 {
     speech::TtsResult result;
