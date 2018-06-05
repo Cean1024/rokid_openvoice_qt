@@ -64,6 +64,7 @@ r_status Pcmplayer::fillaudiodata(char *buf,int size)
     while( size >= HALFSIZE ) {
         node = list->CreateNode();
         if( node ) {
+            /*update 1ch to 2ch*/
             for(int i=0;i<HALFOFHALF;i++) {
                 *p++ =*p_r;
                 *p++=*p_r++;
@@ -79,6 +80,7 @@ r_status Pcmplayer::fillaudiodata(char *buf,int size)
         node = list->CreateNode();
         if(node==nullptr)return FAILED;
 
+        /*update 1ch to 2ch*/
         for(int i=0;i<size/2;i++) {
             *p++ =*p_r;
             *p++=*p_r++;

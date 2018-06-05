@@ -147,10 +147,9 @@ enum mad_flow Player::outputHandle(void *data,
         data_d->disinfo =false;
         package.samplerate = pcm->samplerate;
         package.ch=pcm->channels;
-        package.size =size;
+        package.size = size;
+        data_d->audio_addr->init(pcm->samplerate,pcm->channels,16);
     }
-
-
     unsigned short samples;
 
     switch(nchannels) {
