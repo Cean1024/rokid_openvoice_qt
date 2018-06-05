@@ -6,7 +6,7 @@
 
 
 #define S_NAME "openvice"
-#define S_VERSION "openvice"
+#define S_VERSION "v1.0.0"
 enum sdktype {
     sdktype_tts=0,
     sdktype_speech
@@ -41,7 +41,16 @@ enum returnstatus {
 };
 
 #define DEBUG(format,args...) printf(format,##args)
-#define LOGOUT(format,args...) printf("%s [%s]==> " format "\n",S_NAME,__func__,##args)
+#define LOGOUT(format,...) { \
+    time_t tt=time(0); struct tm   time;\
+    localtime_r(&tt,&time);\
+    printf("%02d-%02d-%02d %02d:%02d:%02d" \
+            " %s [%s]=> "\
+            format "\n",time.tm_year + 1900,\
+    time.tm_mon + 1,time.tm_mday,time.tm_hour,\
+    time.tm_min,time.tm_sec,S_NAME,\
+    __func__,##__VA_ARGS__);\
+  }
 #define LOGPROCESS(format,args...) printf("%s [%s]==> " format "\r",S_NAME,__func__,##args)
 
 
@@ -69,6 +78,11 @@ enum returnstatus {
 #define REV_BITS 16
 #define REV_FRAMESIZE (REV_SAMPLERATE/100)
 #define REV_AFRAMEBUFSIZE (REV_FRAMESIZE * REV_CH *REV_BITS /8)
+
+
+/*net udp config*/
+#define ECHO_UDP_IP "127.0.0.1"
+#define ECHO_UDP_PORT 9998
 
 #endif // COMMON_H
 

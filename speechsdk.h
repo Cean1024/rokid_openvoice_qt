@@ -9,6 +9,7 @@
 #include "Poco/Runnable.h"
 #include "common.h"
 #include "filehandler.h"
+#include "responsehandle.h"
 
 enum voice_status {
     voice_start,
@@ -34,7 +35,7 @@ public:
     void reinit() {
         speech_init();
     }
-    int init(rokid::speech::PrepareOptions &popts, callback_speech_func func, void *data);
+    int init(rokid::speech::PrepareOptions &popts, ResponseHandle * jhandle);
     int speek(std::string strings);
     int speek_voice(char *buf,int len,voice_status flag);
     speech_handle_status get_handle_status() {
@@ -46,6 +47,7 @@ protected:
     virtual void run();
     void speech_run();
     int speech_init();
+    void Handle_speech_result(speech::SpeechResult &Result);
 
 private:
     Poco::Thread thread;
@@ -53,7 +55,7 @@ private:
     std::shared_ptr<speech::Speech> speech ;
     rokid::speech::PrepareOptions popts;
     callback_speech_func handleresult;
-    void * data;
+    ResponseHandle * j_hd;
     int voice_id;
     speech_handle_status sh_status;
     speech::VoiceOptions *voiceOptions;

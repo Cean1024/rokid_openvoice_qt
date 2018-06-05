@@ -17,12 +17,14 @@ SOURCES += main.cpp \
     player/alsahandle.cpp \
     tools/linklist/linklist.cpp \
     player/siglelist.cpp \
-    player/decodecallback.cpp \
     tools/http/httpdl.cpp \
     tools/json/jsonhandle.cpp \
     handlecallbacks.cpp \
     player/pcmplayer.cpp \
-    netserver.cpp
+    netserver.cpp \
+    net/netudpbase.cpp \
+    responsehandle.cpp \
+    httpplayer.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -42,5 +44,8 @@ HEADERS += \
     handlecallbacks.h \
     player/pcmplayer.h \
     netserver.h \
-    wavfile.h
+    wavfile.h \
+    net/netudpbase.h \
+    responsehandle.h \
+    httpplayer.h
 

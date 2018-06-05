@@ -11,159 +11,31 @@ r_status handlhttpdl(char *buf,void *param)
     return player->fillaudiodata(buf,MEMPOOLBUFSIZE);
 }
 
-void action_play(JSON::Object::Ptr &item,void *data)
-{
-    struct noded *nodes = (struct noded *)data;
-    Player *player = (Player *)nodes->data1;
-    Httpdl *hdl = (Httpdl *)nodes->data2;
-    Dynamic::Var tmp = item->get("url");
-    std::string url = tmp.toString();
-    std::cout <<url<< std::endl;
-    hdl->stop();
-    player->stop();
-
-    //return ;
-
-    hdl->RegistCb( handlhttpdl, nodes->data1);
-    hdl->setUrl(url);
-    hdl->start();
-    player->start();
-}
-
-void action_stop(JSON::Object::Ptr &item,void *data)
-{
-    struct noded *nodes = (struct noded *)data;
-    Player *player = (Player *)nodes->data1;
-    Httpdl *hdl = (Httpdl *)nodes->data2;
-    hdl->stop();
-    player->stop();
-}
-void action_voice(JSON::Object::Ptr &item,void *data)
-{
-
-    TtsSdk *tts_sdk = (TtsSdk *)data;
-    Dynamic::Var tmp = item->get("tts");
-    std::string tts = tmp.toString();
-    int index =tts.find("若琪",0);
-    if( index !=std::string::npos) tts.replace(tts.find("若琪",0),6,"小桑");
-
-    LOGOUT("tts:%s",tts.c_str());
-
-    tts_sdk->set_vh_status(vh_start);
-    //vh_status vhs = tts_sdk->speek(tts);
-    tts_sdk->speek(tts);
-    while ( tts_sdk->get_vh_status() != vh_finish ) usleep(10000);
-    tts_sdk->start_speak();
-    tts_sdk->stop_speak();
-
-}
-
-void Handle_speech_result(speech::SpeechResult &Result, void *data)
-{
-    JsonHandle * handl = (JsonHandle *)data;
-
-    switch (Result.type) {
-    case speech::SPEECH_RES_ERROR: {
-        LOGOUT("Handler speech--> err:%d",Result.err);
-    };break;
-    case speech::SPEECH_RES_INTER: {
-        LOGOUT("Handler speech-->  SPEECH_RES_INTER");
-
-    };break;
-    case speech::SPEECH_RES_START: {
-        LOGOUT("Handler speech-->  SPEECH_RES_START");
-
-    };break;
-    case speech::SPEECH_RES_CANCELLED:
-    case speech::SPEECH_RES_END: {
-        LOGOUT("Handler speech-->  SPEECH_RES_END");
-        LOGOUT("action:%s",Result.action.c_str());
-        LOGOUT("nlp:%s",Result.nlp.c_str());
-        handl->handle(Result.action);
-    };break;
-
-    case speech::SPEECH_RES_ASR_FINISH: {
-        LOGOUT("Handler speech-->  SPEECH_RES_ASR_FINISH");
-        LOGOUT("ASR:%s",Result.asr.c_str());
-        LOGOUT("nlp:%s",Result.nlp.c_str());
-    };break;
-    }
-}
-
-void Handle_tts_result(speech::TtsResult &Result, void *data,void *data2)
-{
-    //struct noded *pdata = (struct noded *)data;
-    //Player * player = (Player *)pdata->data1;
-    //Pcmplayer * pcmplayer = (Pcmplayer *)pdata->data2;
-    TtsSdk *ttssdk = (TtsSdk *)data2;
-    switch (Result.type) {
-    case speech::TTS_RES_ERROR: {
-        LOGOUT("Handler tts--> err:%d",Result.err);
-        //pcmplayer->stop();
-        //player->resume();
-        ttssdk->set_vh_status(vh_err);
-
-    };break;
-    case speech::TTS_RES_VOICE: {
 
 
-        ttssdk->filldata(\
-                    (char *)Result.voice->c_str(),\
-                    Result.voice->size());
-        //LOGOUT("Handler tts--> get voice  size:%d",Result.voice->size());
 
-    };break;
-    case speech::TTS_RES_START: {
-        LOGOUT("Handler tts--> voice start");
-        ttssdk->set_vh_status(vh_processing);
-        //player->pause();
-        //char buf[PCMPLAYERFRAMSIZE];
-        //memset(buf,0,PCMPLAYERFRAMSIZE);
-        //pcmplayer->start();
-        //ttssdk->filldata(buf,PCMPLAYERFRAMSIZE);
-
-    };break;
-    case speech::TTS_RES_CANCELLED:
-    case speech::TTS_RES_END: {
-        LOGOUT("Handler tts--> voice end");
-        //pcmplayer->finish();
-        //player->resume();
-        ttssdk->set_vh_status(vh_finish);
-
-    };break;
-    }
-}
 void openvoicerunnable(void *data)
 {
-
     speech::PrepareOptions popts;
     filehandler fhdl;
     TtsSdk tts_sdk;
     SpeechSdk speech_sdk;
-    Player player(handlenext,(void *)&speech_sdk);
-    Pcmplayer pcmplayer;
-    JsonHandle Jhandl;
-    Httpdl hdl;
-    struct noded Jsonhandlerdata,ttshandledata;
+    HttpPlayer hplayer;
+    ResponseHandle Jhandl;
 
-    Jsonhandlerdata.data1 = &player;
-    Jsonhandlerdata.data2 = &hdl;
-    ttshandledata.data1 = &player;
-    ttshandledata.data2 = &pcmplayer;
 
     fhdl.Getconfigfile(popts);
 
-    Jhandl.cb_registe(action_play,(void *)&Jsonhandlerdata,action_type_media);
-    Jhandl.cb_registe(action_stop,(void *)&Jsonhandlerdata,action_type_stop);
-    Jhandl.cb_registe(action_voice,(void *)&tts_sdk,action_type_voice);
+    Jhandl.cb_registe((void *)&hplayer,action_type_media);
+    Jhandl.cb_registe((void *)&hplayer,action_type_stop);
+    Jhandl.cb_registe((void *)&tts_sdk,action_type_voice);
 
     Jhandl.start();
 
-    tts_sdk.addplayer(player);
-    tts_sdk.addplayer(pcmplayer);
+    tts_sdk.addplayer(hplayer);
 
-    speech_sdk.init(popts , Handle_speech_result,(void *)&Jhandl);
-    tts_sdk.init(popts ,Handle_tts_result,(void *)&tts_sdk);
+    speech_sdk.init(popts ,&Jhandl);
+    tts_sdk.init(popts);
 
     //std::string input;
     netserver server("192.168.199.122",9999);
@@ -226,16 +98,16 @@ void openvoicerunnable(void *data)
         server.listenandaccept();
         {
             int playerflag=0;
-            int pcmflag=0;
-            playstatus p_sta = player.getPlayStatus();
-            Pcmplayer_status pcm_sta = pcmplayer.returnstatus();
-            if(p_sta == start_play || p_sta == resume_play){
-                player.pause();
+            int ttsflag=0;
+            playstatus p_sta = hplayer.getPlayStatus();
+            Pcmplayer_status tts_sta = tts_sdk.returnstatus();
+            if(p_sta == start_play ){
+                hplayer.pause_player();
                 playerflag =1;
             }
-            if(pcm_sta == Pcmplayer_start || pcm_sta == Pcmplayer_resume ) {
-                pcmplayer.pause();
-                pcmflag =1;
+            if(tts_sta == Pcmplayer_start ){
+                tts_sdk.pause_pcmplayer();
+                ttsflag =1;
             }
 
             speech_sdk.speek_voice (nullptr,0,voice_start);
@@ -260,7 +132,7 @@ void openvoicerunnable(void *data)
                 } else break;
             }
             while( true );
-            player.resume();
+            hplayer.resume();
             int retryTime = 0;
 entry_of_speech:
             speech_sdk.speek_voice (nullptr,0,voice_start);
@@ -282,8 +154,8 @@ entry_of_speech:
             }
             revdata.clean();
 #endif
-            if(playerflag)player.resume();
-            if(pcmflag)pcmplayer.resume();
+            if(playerflag)hplayer.resume_player();
+            if(ttsflag)tts_sdk.resume_pcmplayer();
 
         }
 #endif

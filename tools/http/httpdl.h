@@ -16,25 +16,22 @@ enum httpdl_status{
     dl_stop
 };
 
-class Httpdl:public Poco::Runnable
+class Httpdl
 {
 public:
     Httpdl();
     ~Httpdl();
-    r_status HttpGetFile(const std::string& uri, const std::string& fileName, std::string& mime);
-    r_status RegistCb(httpdlcb func_cb,void *outdata);
-    r_status HttpGetFile(std::string &url, std::__cxx11::string &mime);
+
+    r_status httpdownload();
     r_status setUrl(std::string &url);
-    void start();
-    void stop();
+
 protected:
-    void virtual run();
+    virtual r_status handlehttpdl(char *dldata,int len) =0;
+    r_status HttpGetFile(std::string &url, std::__cxx11::string &mime);
+    r_status HttpGetFile(const std::string& uri, const std::string& fileName, std::string& mime);
 
 private:
-    void *outdata;
-    httpdlcb handledl;
     std::string url;
-    Poco::Thread thr;
     httpdl_status dl_sta;
 
 };

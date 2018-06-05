@@ -9,39 +9,6 @@ Httpdl::~Httpdl()
 {
 
 }
-void Httpdl::start()
-{
-
-   if(dl_sta == dl_stop) {
-        LOGOUT("in Httpdl::start");
-        thr.start(*this);
-        dl_sta = dl_start;
-   }
-}
-void Httpdl::stop()
-{
-
-    if( dl_sta == dl_start ) {
-        LOGOUT("in Httpdl::stop");
-        if(thr.isRunning());
-        {
-            pthread_t t_id = thr.tid();
-            pthread_cancel(t_id);
-            //thr.join();
-        }
-
-
-        dl_sta = dl_stop;
-    }
-}
-
-r_status Httpdl::RegistCb(httpdlcb func_cb,void *outdata)
-{
-
-    this->handledl = func_cb;
-    this->outdata = outdata;
-    return SUCCESS;
-}
 
 r_status Httpdl::HttpGetFile(std::string &url,std::string &mime)
 {
@@ -74,7 +41,7 @@ r_status Httpdl::HttpGetFile(std::string &url,std::string &mime)
     while (size < ss && !objHttpResIs.eof()) {
 
         objHttpResIs.read(buf,(ss-size > MEMPOOLBUFSIZE ) ? MEMPOOLBUFSIZE:(ss-size));
-        if(this->handledl(buf,outdata) != SUCCESS)LOGOUT(" handledl err!!");
+        if(this->handlehttpdl(buf,MEMPOOLBUFSIZE) != SUCCESS)LOGOUT(" handledl err!!");
         size += MEMPOOLBUFSIZE;
         LOGPROCESS("dl proccess :%f%%",size*100.0 /ss);
     }
@@ -128,8 +95,7 @@ r_status Httpdl::setUrl(std::string &url)
     this->url = url;
     return SUCCESS;
 }
-
-void Httpdl::run()
+r_status Httpdl::httpdownload()
 {
     std::string mime;
     LOGOUT("start downloading");

@@ -4,6 +4,7 @@
 #include "common.h"
 #include <alsa/asoundlib.h>
 
+
 #define defaultframe 1024
 #define n_buf 10
 //#define ALSAPCM "/dev/pcmC0D0p"
@@ -44,6 +45,10 @@ public:
     r_status audioinit ();
     r_status writei(char *buf ,int frames);
 
+protected:
+
+
+private:
 
     struct snd_pcm_params pcm_param;
     struct audioparam params;

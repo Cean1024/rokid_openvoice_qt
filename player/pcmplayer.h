@@ -2,11 +2,13 @@
 #define PCMPLAYER_H
 #include "alsahandle.h"
 #include "siglelist.h"
-#include "Poco/Thread.h"
-#include "Poco/Runnable.h"
+#include "net/netudpbase.h"
 
 #define PCMPLAYERFRAMSIZE 4096
-
+#define HALFSIZE 2048
+#define HALFOFHALF 1024
+#define PCMPLAYSAMPLE 24000
+#define PCMPLAYCH 2
 enum Pcmplayer_status{
     Pcmplayer_start=0,
     Pcmplayer_stop,
@@ -17,31 +19,31 @@ enum Pcmplayer_status{
 };
 
 
-class Pcmplayer:public Poco::Runnable
+class Pcmplayer
 {
 public:
     Pcmplayer();
     ~Pcmplayer();
     r_status fillaudiodata(char *buf,int size);
-    r_status start();
-    r_status stop();
-    r_status finish();
-    r_status waitfinish();
-    r_status resume();
-    r_status pause();
+    r_status init_pcmplayer();
+    r_status finish_pcmplayer();
+    r_status resume_pcmplayer();
+    r_status pause_pcmplayer();
     Pcmplayer_status returnstatus();
+    void fillfinish() {
+        fillflag = false;
+    }
 
 
 protected:
-    void virtual run();
-    Poco::Thread thread;
+    void play();
 
 private:
     LinkList *list;
     AlsaHandle audio;
-
     Pcmplayer_status playflag;
-    Pcmplayer_status resume_pause_storage;
+    bool fillflag;
+    NetUdpBase udpobj;
 };
 
 #endif // PCMPLAYER_H

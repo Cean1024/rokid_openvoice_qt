@@ -194,7 +194,7 @@ r_status AlsaHandle::audioinit ()
     if(pcm_param.frames> 0) {
 
         params.bufsize = pcm_param.frames * params.bytesperframe;
-        DEBUG("frames size %d\n",pcm_param.frames);
+        LOGOUT("frames size %d\n",pcm_param.frames);
     }
 
 
@@ -204,6 +204,7 @@ r_status AlsaHandle::writei(char *buf ,int frames)
 {
     int err;
     if(pcm_param.playback_handle == NULL) return FAILED;
+
     err = snd_pcm_writei ( pcm_param.playback_handle , buf, frames);
     if ( err == -EPIPE) {
 

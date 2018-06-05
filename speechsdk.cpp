@@ -63,16 +63,44 @@ int SpeechSdk::speech_init()
     //speech->put_text("若琪，来首音乐");
 
 }
-int SpeechSdk::init (rokid::speech::PrepareOptions &popts, callback_speech_func func,void * data)
+int SpeechSdk::init (rokid::speech::PrepareOptions &popts, ResponseHandle *jhandle)
 {
-    handleresult = func;
-    this->data = data;
+    this->j_hd = jhandle;
     this->popts = popts;
     speech_init();
 
     thread.start(*this);
     //thread.join();//等待该线程技术
     return 0;
+}
+void SpeechSdk::Handle_speech_result(speech::SpeechResult &Result)
+{
+    switch (Result.type) {
+    case speech::SPEECH_RES_ERROR: {
+        LOGOUT("Handler speech--> err:%d",Result.err);
+    };break;
+    case speech::SPEECH_RES_INTER: {
+        LOGOUT("Handler speech-->  SPEECH_RES_INTER");
+
+    };break;
+    case speech::SPEECH_RES_START: {
+        LOGOUT("Handler speech-->  SPEECH_RES_START");
+
+    };break;
+    case speech::SPEECH_RES_CANCELLED:
+    case speech::SPEECH_RES_END: {
+        LOGOUT("Handler speech-->  SPEECH_RES_END");
+        LOGOUT("action:%s",Result.action.c_str());
+        LOGOUT("nlp:%s",Result.nlp.c_str());
+        j_hd->analyses(Result.action);
+    };break;
+
+    case speech::SPEECH_RES_ASR_FINISH: {
+        LOGOUT("Handler speech-->  SPEECH_RES_ASR_FINISH");
+        LOGOUT("ASR:%s",Result.asr.c_str());
+        LOGOUT("nlp:%s",Result.nlp.c_str());
+    };break;
+    }
 }
 
 void SpeechSdk::speech_run()
@@ -85,11 +113,10 @@ void SpeechSdk::speech_run()
         }
         // 处理result
         if(result.type == speech::SPEECH_RES_END ) sh_status = handle_processing;
-        handleresult(result,data);
+        Handle_speech_result(result);
         if(result.type == speech::SPEECH_RES_END ) sh_status = handle_end;
         else if( result.type == speech::SPEECH_RES_ERROR ) sh_status = handle_err;
     }
-
 
 }
 

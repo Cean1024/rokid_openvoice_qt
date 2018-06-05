@@ -8,7 +8,7 @@
 #include "player/pcmplayer.h"
 #include "netserver.h"
 #include "wavfile.h"
-
+#include "httpplayer.h"
 
 void Handle_speech_result(speech::SpeechResult &Result,void *data);
 void Handle_tts_result(speech::TtsResult &Result, void *data, void *data2);

@@ -7,7 +7,7 @@
 #include "Poco/Runnable.h"
 #include "common.h"
 #include "player/pcmplayer.h"
-#include "player/player.h"
+#include "httpplayer.h"
 
 typedef void (*callback_tts_func)(rokid::speech::TtsResult &Result,void *data,void *data2);
 #define RETRY_TIME 10
@@ -19,49 +19,30 @@ enum vh_status{
 };
 
 using namespace rokid;
-class TtsSdk: public Poco::Runnable
+class TtsSdk:public Pcmplayer,public Poco::Runnable
 {
 public:
     TtsSdk();
     ~TtsSdk();
-    int init(speech::PrepareOptions &popts ,callback_tts_func func,void *data);
+    int init(speech::PrepareOptions &popts );
     vh_status speek(std::string strings);
-    void addplayer(Pcmplayer &player);
-    void addplayer(Player &player);
+    void addplayer(HttpPlayer &player);
 
-    void  start_speak()
-    {
-        if(mp3player)mp3player->pause();
-        if(player)player->start();
+    void start_speak();
+    void stop_speak();
+    void filldata(char *buf,int size);
+    void set_vh_status(vh_status vhs);
+    vh_status get_vh_status();
 
-    }
-    void stop_speak()
-    {
-        if(player)player->waitfinish();
-        if(mp3player)mp3player->resume();
-    }
-    void filldata(char *buf,int size) {
-        if(player)player->fillaudiodata(buf,size);
-    }
-
-    void set_vh_status(vh_status vhs)
-    {
-        voicehandle=vhs;
-    }
-    vh_status get_vh_status()
-    {
-        return voicehandle;
-    }
 protected:
     virtual void run();
     void reinit();
+    void Handle_tts_result(speech::TtsResult &Result);
 private:
     std::shared_ptr<speech::Tts> tts;
     speech::PrepareOptions popts;
     callback_tts_func handleresult;
-    Pcmplayer *player;
-    Player *mp3player;
-
+    HttpPlayer *httpplayer;
     Poco::Thread ptr;
     void * data;
     vh_status voicehandle;
