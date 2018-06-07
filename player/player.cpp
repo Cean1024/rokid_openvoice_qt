@@ -184,6 +184,7 @@ enum mad_flow Player::outputHandle(void *data,
             usleep(100000);
 
     }
+    memcpy(package.buf,databuf2,size);
     data_d->udpobj->senddata(package);
     data_d->audio_addr->writei(databuf2,1152);
 
